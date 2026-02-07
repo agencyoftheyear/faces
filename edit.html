@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma FACES Pro</title>
+    a
+    <!-- Chart.js & Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = JSON.parse(window.__firebase_config || '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = window.__app_id || 'default-app';
+        let currentUser = null;
+
+        // --- AUTH ---
+        async function initAuth() {
+            if (window.__initial_auth_token) {
+                await signInWithCustomToken(auth, window.__initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        }
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadSavedReports(); // Carrega lista ao logar
+            }
+        });
+
+        // --- GLOBAL FUNCTIONS EXPORTED TO WINDOW ---
+        window.saveReportToCloud = async function() {
+            if (!currentUser) {
+                alert("Conectando ao servidor... Tente novamente em instantes.");
+                return;
+            }
+
+            const reportName = prompt("Dê um nome para este relatório (ex: Fevereiro 2026):");
+            if (!reportName) return;
+
+            const reportData = {
+                name: reportName,
+                date: serverTimestamp(),
+                summary: window.appState.summary,
+                procedures: window.appState.procedures,
+                fixedExpenses: window.appState.inputs.fixedExpenses,
+                totalHoursAvailable: window.appState.inputs.totalHoursAvailable
+            };
+
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reports');
+                await addDoc(colRef, reportData);
+                alert("Relatório salvo com sucesso!");
+                loadSavedReports();
+            } catch (e) {
+                console.error("Erro ao salvar:", e);
+                alert("Erro ao salvar relatório.");
+            }
+        };
+
+        window.loadSavedReports = async function() {
+            if (!currentUser) return;
+            
+            const listEl = document.getElementById('savedReportsList');
+            listEl.innerHTML = '<div class="loading">Carregando históricos...</div>';
+
+            try {
+                const colRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'reports');
+                // Nota: Firestore não permite orderBy complexo sem index, usando padrão simples
+                const q = query(colRef); 
+                const snapshot = await getDocs(q);
+                
+                listEl.innerHTML = '';
+                if (snapshot.empty) {
+                    listEl.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">Nenhum relatório salvo ainda.</div>';
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const item = document.createElement('div');
+                    item.className = 'report-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${data.name}</strong><br>
+                            <small>${new Date(data.date?.seconds * 1000).toLocaleDateString()}</small>
+                        </div>
+                        <div class="report-actions">
+                            <button class="action-btn load-btn" onclick="loadReportData('${docSnap.id}')">📂 Abrir</button>
+                            <button class="action-btn delete-btn" onclick="deleteReport('${docSnap.id}')">🗑️</button>
+                        </div>
+                    `;
+                    // Attach data directly to element to avoid complex parsing strings
+                    item.querySelector('.load-btn').onclick = () => {
+                        window.appState.procedures = data.procedures;
+                        window.appState.inputs.fixedExpenses = data.fixedExpenses;
+                        window.appState.inputs.totalHoursAvailable = data.totalHoursAvailable || 176;
+                        
+                        // Update UI Inputs
+                        document.getElementById('inputFixedExpenses').value = data.fixedExpenses;
+                        document.getElementById('inputTotalHours').value = data.totalHoursAvailable || 176;
+                        
+                        window.renderEditorTable();
+                        window.recalculateAll();
+                        window.switchTab('dashboard');
+                    };
+                    listEl.appendChild(item);
+                });
+
+            } catch (e) {
+                console.error("Erro ao listar:", e);
+                listEl.innerHTML = 'Erro ao carregar lista.';
+            }
+        };
+
+        window.deleteReport = async function(docId) {
+            if (!confirm("Tem certeza que deseja excluir este relatório?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'reports', docId));
+                loadSavedReports();
+            } catch (e) {
+                alert("Erro ao excluir.");
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-blue: #2563eb;
+            --accent-dark: #0f172a;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #7c3aed;
+            --border-color: #e2e8f0;
+            --font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family); background: var(--bg-color); color: var(--text-primary); line-height: 1.5; padding-bottom: 80px; }
+
+        /* --- NAV BAR --- */
+        .navbar {
+            background: var(--accent-dark);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .logo { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
+        .nav-tabs { display: flex; gap: 5px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 8px; }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .nav-btn.active { background: white; color: var(--accent-dark); shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-btn:hover:not(.active) { color: white; }
+
+        /* --- LAYOUT --- */
+        .main-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- EDITOR STYLES --- */
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .input-group { margin-right: 20px; }
+        .input-group label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-input { 
+            padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; width: 150px; 
+            font-weight: 600; color: var(--accent-dark);
+        }
+
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background: #f1f5f9; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
+        .data-table input { width: 100%; border: none; background: transparent; padding: 4px; font-family: inherit; }
+        .data-table input:focus { background: #f8fafc; outline: 2px solid var(--accent-blue); border-radius: 4px; }
+        .btn-add { margin-top: 1rem; padding: 10px 20px; background: var(--accent-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-delete { color: var(--accent-red); cursor: pointer; border: none; background: none; font-size: 1.1rem; }
+
+        /* --- DASHBOARD STYLES (Reused & Refined) --- */
+        .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
+        .col-3 { grid-column: span 3; } .col-4 { grid-column: span 4; } .col-6 { grid-column: span 6; } .col-8 { grid-column: span 8; } .col-12 { grid-column: span 12; }
+        @media (max-width: 768px) { .col-3, .col-4, .col-6, .col-8 { grid-column: span 12; } }
+
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .kpi-title { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .kpi-val { font-size: 1.8rem; font-weight: 800; color: var(--accent-dark); }
+        .val-green { color: var(--accent-green); }
+        .val-red { color: var(--accent-red); }
+
+        /* --- SAVED REPORTS STYLES --- */
+        .report-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        .report-item:hover { transform: translateX(5px); border-color: var(--accent-blue); }
+        .report-actions { display: flex; gap: 10px; }
+        .action-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; background: white; font-size: 0.9rem; }
+        .load-btn:hover { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+        .delete-btn:hover { background: #fee2e2; color: var(--accent-red); border-color: #fee2e2; }
+
+        /* --- AI FAB --- */
+        .ai-fab {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--accent-purple); color: white;
+            padding: 12px 24px; border-radius: 50px;
+            font-weight: 700; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+            z-index: 100; transition: transform 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ai-fab:hover { transform: scale(1.05); }
+
+        /* AI Panel */
+        .ai-panel {
+            position: fixed; bottom: 80px; right: 20px;
+            width: 380px; height: 500px;
+            background: white; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            z-index: 99; display: none; flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .ai-header { background: var(--accent-purple); color: white; padding: 15px; border-radius: 16px 16px 0 0; font-weight: bold; display: flex; justify-content: space-between; }
+        .ai-body { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; font-size: 0.9rem; }
+        .ai-footer { padding: 10px; border-top: 1px solid var(--border-color); display: flex; gap: 5px; }
+        .ai-input { flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; }
+        .ai-send { background: var(--accent-purple); color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; }
+        
+        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 85%; }
+        .msg.user { background: var(--accent-purple); color: white; align-self: flex-end; margin-left: auto; }
+        .msg.ai { background: white; border: 1px solid var(--border-color); color: var(--text-primary); }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAV BAR -->
+    <nav class="navbar">
+        <div class="logo">FACES<span style="color:var(--accent-blue)">.Pro</span></div>
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('editor')">Editor de Dados</button>
+            <button class="nav-btn" onclick="switchTab('saved')">Relatórios Salvos</button>
+        </div>
+        <div>
+            <button class="action-btn" onclick="saveReportToCloud()" style="background: var(--accent-green); color: white; border:none; font-weight:bold;">💾 Salvar na Nuvem</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+
+        <!-- TAB: DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid">
+                <!-- KPIs -->
+                <div class="card col-3">
+                    <div class="kpi-title">Faturamento</div>
+                    <div class="kpi-val" id="kpiRevenue">R$ 0,00</div>
+                </div>
+                <div class="card col-3">
+                    <div class="kpi-title">Lucro Líquido</div>
+                    <div class="kpi-val val-green" id="kpiProfit">R$ 0,00</div>
+                </div>
+                <div class="card col-3">
+                    <div class="kpi-title">Margem</div>
+                    <div class="kpi-val val-green" id="kpiMargin">0%</div>
+                </div>
+                <div class="card col-3">
+                    <div class="kpi-title">Custo Total</div>
+                    <div class="kpi-val val-red" id="kpiCost">R$ 0,00</div>
+                </div>
+
+                <!-- Charts -->
+                <div class="card col-4">
+                    <div class="kpi-title">Distribuição (Receita)</div>
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="card col-8">
+                    <div class="kpi-title">Composição do Custo vs Lucro</div>
+                    <canvas id="barChart" height="120"></canvas>
+                </div>
+
+                <!-- Productivity -->
+                <div class="card col-6">
+                    <div class="kpi-title">Eficiência de Agenda</div>
+                    <div style="display: flex; align-items: center; justify-content: space-around; margin-top:10px;">
+                        <div style="width: 150px;"><canvas id="prodChart"></canvas></div>
+                        <div>
+                            <div style="font-size: 2rem; font-weight: 800;" id="txtIdlePercent">0%</div>
+                            <small class="text-secondary">de ociosidade</small>
+                            <div style="margin-top:10px; font-size:0.9rem;">
+                                <strong>Livres:</strong> <span id="txtIdleHours">0</span>h
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Strategy -->
+                <div class="card col-6" style="border: 2px solid var(--accent-purple);">
+                    <div class="kpi-title" style="color:var(--accent-purple)">⚡ Insight Rápido (IA)</div>
+                    <div id="aiInsightBox" style="font-size: 0.95rem; color: #475569; margin-top: 10px; font-style: italic;">
+                        "Com base nos dados atuais, seu maior gargalo parece ser..."
+                    </div>
+                    <button onclick="askAi('Analise meus números atuais e me dê um insight curto')" style="margin-top:15px; background:var(--accent-purple); color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Gerar Nova Análise</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: EDITOR -->
+        <div id="editor" class="tab-content">
+            <div class="editor-header">
+                <div style="display:flex;">
+                    <div class="input-group">
+                        <label>Despesas Fixas (R$)</label>
+                        <input type="number" id="inputFixedExpenses" class="form-input" value="5393" onchange="updateGlobalInput('fixedExpenses', this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>Horas Disp./Mês</label>
+                        <input type="number" id="inputTotalHours" class="form-input" value="176" onchange="updateGlobalInput('totalHoursAvailable', this.value)">
+                    </div>
+                </div>
+                <div>
+                    <span style="font-size:0.85rem; color: var(--text-secondary);">*Edite os valores na tabela abaixo. O sistema salva automaticamente.</span>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="20%">Procedimento</th>
+                        <th width="8%">Qtd</th>
+                        <th width="12%">Preço (R$)</th>
+                        <th width="12%">Custo Mat. (R$)</th>
+                        <th width="10%">Tempo (min)</th>
+                        <th width="10%">Comissão (%)</th>
+                        <th width="10%">Imposto (%)</th>
+                        <th width="10%">Taxa Cartão (%)</th>
+                        <th width="5%"></th>
+                    </tr>
+                </thead>
+                <tbody id="proceduresBody">
+                    <!-- Rows generated by JS -->
+                </tbody>
+            </table>
+            <button class="btn-add" onclick="addNewProcedure()">+ Adicionar Procedimento</button>
+        </div>
+
+        <!-- TAB: SAVED -->
+        <div id="saved" class="tab-content">
+            <h2 style="margin-bottom: 1.5rem;">Relatórios Salvos</h2>
+            <div id="savedReportsList">
+                <div class="loading">Conecte-se para ver relatórios salvos.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AI CHAT -->
+    <div class="ai-fab" onclick="toggleAi()">✨ Chat CFO</div>
+    <div class="ai-panel" id="aiPanel">
+        <div class="ai-header">
+            CFO Virtual <span onclick="toggleAi()" style="cursor:pointer">✖</span>
+        </div>
+        <div class="ai-body" id="chatBody">
+            <div class="msg ai">Olá! Edite os dados na aba "Editor" e volte aqui para pedir uma análise.</div>
+        </div>
+        <div class="ai-footer">
+            <input type="text" id="aiInput" class="ai-input" placeholder="Pergunte algo..." onkeypress="handleEnter(event)">
+            <button class="ai-send" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // --- APP STATE ---
+        window.appState = {
+            inputs: {
+                fixedExpenses: 5393,
+                totalHoursAvailable: 176
+            },
+            procedures: [
+                { id: 1, name: "Clareamento Caseiro", qty: 2, price: 780, costMat: 124, time: 120, commPct: 30, taxPct: 8, cardPct: 7.2 },
+                { id: 2, name: "Clareamento Consultório", qty: 2, price: 1000, costMat: 120, time: 180, commPct: 30, taxPct: 8, cardPct: 8.9 },
+                { id: 3, name: "Endodontia", qty: 2, price: 650, costMat: 79, time: 90, commPct: 30, taxPct: 8, cardPct: 6.6 },
+                { id: 4, name: "Facetas", qty: 20, price: 550, costMat: 78, time: 35, commPct: 30, taxPct: 8, cardPct: 8.9 },
+                { id: 5, name: "Limpeza", qty: 20, price: 280, costMat: 13, time: 30, commPct: 30, taxPct: 8, cardPct: 4.2 },
+                { id: 6, name: "Restauração Grande", qty: 15, price: 280, costMat: 37, time: 60, commPct: 30, taxPct: 8, cardPct: 2.8 },
+                { id: 7, name: "Restauração Pequena", qty: 20, price: 180, costMat: 37, time: 30, commPct: 30, taxPct: 8, cardPct: 2.8 }
+            ],
+            summary: {} // Calculated automatically
+        };
+
+        // --- CORE LOGIC ---
+        window.recalculateAll = function() {
+            let s = {
+                revenue: 0, materials: 0, commissions: 0, taxes: 0, cardFees: 0,
+                usedHours: 0, profit: 0
+            };
+
+            window.appState.procedures.forEach(p => {
+                const totalRev = p.qty * p.price;
+                s.revenue += totalRev;
+                s.materials += p.qty * p.costMat;
+                s.commissions += totalRev * (p.commPct / 100);
+                s.taxes += totalRev * (p.taxPct / 100);
+                s.cardFees += totalRev * (p.cardPct / 100);
+                s.usedHours += (p.qty * p.time) / 60;
+            });
+
+            s.fixedExpenses = Number(window.appState.inputs.fixedExpenses);
+            s.totalCost = s.materials + s.commissions + s.taxes + s.cardFees + s.fixedExpenses;
+            s.profit = s.revenue - s.totalCost;
+            s.margin = s.revenue > 0 ? (s.profit / s.revenue) * 100 : 0;
+            
+            s.totalHours = Number(window.appState.inputs.totalHoursAvailable);
+            s.idleHours = s.totalHours - s.usedHours;
+            s.idlePercent = s.totalHours > 0 ? (s.idleHours / s.totalHours) * 100 : 0;
+
+            window.appState.summary = s;
+            updateDashboardDOM();
+            updateCharts();
+        };
+
+        // --- UI UPDATERS ---
+        function updateDashboardDOM() {
+            const s = window.appState.summary;
+            
+            // Format Helpers
+            const fmt = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            
+            document.getElementById('kpiRevenue').textContent = fmt(s.revenue);
+            document.getElementById('kpiProfit').textContent = fmt(s.profit);
+            document.getElementById('kpiCost').textContent = fmt(s.totalCost);
+            document.getElementById('kpiMargin').textContent = s.margin.toFixed(1) + '%';
+            
+            document.getElementById('txtIdlePercent').textContent = Math.max(0, s.idlePercent).toFixed(1) + '%';
+            document.getElementById('txtIdleHours').textContent = Math.max(0, s.idleHours).toFixed(1);
+
+            // Colors
+            const profitEl = document.getElementById('kpiProfit');
+            profitEl.className = s.profit >= 0 ? 'kpi-val val-green' : 'kpi-val val-red';
+        }
+
+        // --- EDITOR LOGIC ---
+        window.renderEditorTable = function() {
+            const tbody = document.getElementById('proceduresBody');
+            tbody.innerHTML = '';
+
+            window.appState.procedures.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input value="${p.name}" onchange="updateProc(${index}, 'name', this.value)"></td>
+                    <td><input type="number" value="${p.qty}" onchange="updateProc(${index}, 'qty', this.value)"></td>
+                    <td><input type="number" value="${p.price}" onchange="updateProc(${index}, 'price', this.value)"></td>
+                    <td><input type="number" value="${p.costMat}" onchange="updateProc(${index}, 'costMat', this.value)"></td>
+                    <td><input type="number" value="${p.time}" onchange="updateProc(${index}, 'time', this.value)"></td>
+                    <td><input type="number" value="${p.commPct}" onchange="updateProc(${index}, 'commPct', this.value)"></td>
+                    <td><input type="number" value="${p.taxPct}" onchange="updateProc(${index}, 'taxPct', this.value)"></td>
+                    <td><input type="number" value="${p.cardPct}" onchange="updateProc(${index}, 'cardPct', this.value)"></td>
+                    <td><button class="btn-delete" onclick="removeProc(${index})">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.updateProc = function(index, field, value) {
+            const val = field === 'name' ? value : Number(value);
+            window.appState.procedures[index][field] = val;
+            recalculateAll();
+        };
+
+        window.updateGlobalInput = function(field, value) {
+            window.appState.inputs[field] = Number(value);
+            recalculateAll();
+        };
+
+        window.addNewProcedure = function() {
+            window.appState.procedures.push({
+                id: Date.now(), name: "Novo Procedimento", qty: 0, price: 0, costMat: 0, time: 30, commPct: 30, taxPct: 8, cardPct: 0
+            });
+            renderEditorTable();
+            recalculateAll(); // Although 0 values won't change summary, good practice
+        };
+
+        window.removeProc = function(index) {
+            window.appState.procedures.splice(index, 1);
+            renderEditorTable();
+            recalculateAll();
+        };
+
+        // --- TABS LOGIC ---
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            // Find button roughly by text or structure, simplified here:
+            const buttons = document.querySelectorAll('.nav-btn');
+            if(tabId === 'dashboard') buttons[0].classList.add('active');
+            if(tabId === 'editor') buttons[1].classList.add('active');
+            if(tabId === 'saved') buttons[2].classList.add('active');
+        };
+
+        // --- CHARTS ---
+        let pieChart, barChart, prodChart;
+
+        function updateCharts() {
+            const s = window.appState.summary;
+
+            // PIE
+            if (pieChart) pieChart.destroy();
+            pieChart = new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Lucro', 'Comissões', 'Materiais', 'Fixos', 'Impostos/Taxas'],
+                    datasets: [{
+                        data: [s.profit, s.commissions, s.materials, s.fixedExpenses, s.taxes + s.cardFees],
+                        backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#64748b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 10 } } } }
+            });
+
+            // BAR
+            if (barChart) barChart.destroy();
+            barChart = new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Resultado'],
+                    datasets: [
+                        { label: 'Lucro', data: [s.profit], backgroundColor: '#10b981' },
+                        { label: 'Custos', data: [s.totalCost], backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: { indexAxis: 'y', responsive: true, scales: { x: { stacked: true }, y: { stacked: true } } }
+            });
+
+            // PRODUCTIVITY
+            if (prodChart) prodChart.destroy();
+            prodChart = new Chart(document.getElementById('prodChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Produtivo', 'Ocioso'],
+                    datasets: [{
+                        data: [s.usedHours, Math.max(0, s.idleHours)],
+                        backgroundColor: ['#0f172a', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '75%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        // --- AI (GEMINI) ---
+        const apiKey = ""; 
+        const modelId = "gemini-2.5-flash-preview-09-2025";
+
+        window.toggleAi = function() {
+            const p = document.getElementById('aiPanel');
+            p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        window.handleEnter = function(e) { if(e.key === 'Enter') sendMessage(); };
+        window.askAi = function(q) { 
+            toggleAi();
+            document.getElementById('aiInput').value = q;
+            sendMessage();
+        };
+
+        window.sendMessage = async function() {
+            const input = document.getElementById('aiInput');
+            const txt = input.value;
+            if(!txt) return;
+
+            addMsg(txt, 'user');
+            input.value = '';
+            
+            const context = `
+                Você é um CFO Financeiro.
+                DADOS ATUAIS DA PLATAFORMA:
+                Faturamento: R$ ${window.appState.summary.revenue}
+                Lucro: R$ ${window.appState.summary.profit} (Margem ${window.appState.summary.margin.toFixed(1)}%)
+                Despesas Fixas: R$ ${window.appState.inputs.fixedExpenses}
+                Ociosidade: ${window.appState.summary.idlePercent.toFixed(1)}%
+                
+                Pergunta do usuário: "${txt}"
+                Responda curto e direto.
+            `;
+
+            try {
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{ parts: [{ text: context }] }] })
+                });
+                const data = await resp.json();
+                addMsg(data.candidates[0].content.parts[0].text, 'ai');
+            } catch(e) {
+                addMsg("Erro ao conectar com a IA.", 'ai');
+            }
+        };
+
+        function addMsg(txt, type) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerHTML = marked.parse(txt);
+            document.getElementById('chatBody').appendChild(div);
+            document.getElementById('chatBody').scrollTop = 10000;
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            renderEditorTable();
+            recalculateAll();
+        };
+
+    </script>
+</body>
+</html>
