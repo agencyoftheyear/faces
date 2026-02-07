@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório Financeiro Estratégico — Clínica FACES</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Marked para renderizar Markdown do chat -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --bg-color: #f4f7f6;
@@ -15,6 +17,7 @@
             --accent-green: #10b981;
             --accent-red: #ef4444;
             --accent-yellow: #f59e0b;
+            --ai-purple: #7c3aed; /* Cor da IA */
             --brand-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -29,92 +32,7 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
-            padding-bottom: 50px;
-        }
-
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--accent-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .login-card {
-            background: white;
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            text-align: center;
-            width: 100%;
-            max-width: 420px;
-        }
-
-        .login-logo {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -1px;
-            color: var(--accent-blue);
-        }
-
-        .login-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            transition: border-color 0.2s;
-            outline: none;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-
-        .login-input:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .login-btn:hover {
-            background-color: #1e293b;
-        }
-
-        .error-msg {
-            color: var(--accent-red);
-            font-size: 0.85rem;
-            margin-top: 1rem;
-            min-height: 1.2em;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-weight: 600;
+            padding-bottom: 80px; /* Espaço para o FAB */
         }
 
         /* --- HEADER & BADGE --- */
@@ -164,11 +82,13 @@
         }
 
         /* --- LAYOUT GRID --- */
-        /* Oculto inicialmente até login */
         #dashboard-content {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
@@ -312,23 +232,177 @@
             font-weight: bold;
         }
 
+        /* --- AI FEATURES UI --- */
+        .ai-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--ai-purple);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ai-fab:hover {
+            transform: scale(1.05);
+            background: #6d28d9;
+        }
+
+        /* Modal/Panel Styles */
+        .ai-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            z-index: 99;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ai-panel-header {
+            background: var(--ai-purple);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-panel-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ai-panel-footer {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .chat-btn {
+            background: var(--ai-purple);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Chat Bubbles */
+        .message {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--ai-purple);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.system {
+            align-self: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin: 10px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 5px;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Markdown Styles inside chat */
+        .message.ai strong { color: var(--ai-purple); }
+        .message.ai ul { margin-left: 20px; margin-bottom: 10px; }
+        .message.ai p { margin-bottom: 8px; }
+
+        /* Quick Action Buttons */
+        .quick-actions {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .quick-btn {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--ai-purple);
+        }
+        .quick-btn:hover { background: #f3e8ff; }
+
     </style>
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="login-logo">Clínica FACES</div>
-            <div class="login-subtitle">Acesso Restrito ao Relatório Executivo</div>
-            
-            <input type="password" id="passwordInput" class="login-input" placeholder="DIGITE A SENHA DE ACESSO">
-            <button class="login-btn" onclick="checkPassword()">Acessar Painel</button>
-            <div id="loginError" class="error-msg">SENHA INCORRETA</div>
-        </div>
-    </div>
-
-    <!-- CONTEÚDO DO DASHBOARD (Oculto inicialmente) -->
+    <!-- CONTEÚDO DO DASHBOARD (Acesso Direto) -->
     <div id="dashboard-content">
         <!-- 1️⃣ CAPA EXECUTIVA -->
         <header>
@@ -480,65 +554,56 @@
         </div>
     </div>
 
+    <!-- AI FAB & PANEL -->
+    <div class="ai-fab" id="aiFab" onclick="toggleAiPanel()">
+        <span>✨ Consultor IA</span>
+    </div>
+
+    <div class="ai-panel" id="aiPanel">
+        <div class="ai-panel-header">
+            <span>🤖 CFO Virtual Clínica FACES</span>
+            <span onclick="toggleAiPanel()" style="cursor:pointer; opacity: 0.7;">✖</span>
+        </div>
+        <div class="ai-panel-body" id="chatBody">
+            <div class="message system">Conectado ao Gemini 2.5 Flash</div>
+            <div class="message ai">
+                Olá! Sou o assistente financeiro inteligente da Clínica FACES. <br><br>
+                Tenho acesso a todos os seus dados de faturamento, custos e ociosidade. Como posso ajudar a aumentar seu lucro hoje?
+            </div>
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="askAi('Gere um relatório executivo resumido')">📝 Gerar Relatório</button>
+                <button class="quick-btn" onclick="askAi('Como reduzir a ociosidade?')">📉 Reduzir Ociosidade</button>
+                <button class="quick-btn" onclick="askAi('Analise minha margem de lucro')">💰 Analisar Margem</button>
+            </div>
+        </div>
+        <div class="ai-panel-footer">
+            <div class="chat-input-group">
+                <input type="text" id="aiInput" class="chat-input" placeholder="Pergunte sobre os números..." onkeypress="handleEnter(event)">
+                <button class="chat-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- AUTH LOGIC ---
-        const passwordInput = document.getElementById('passwordInput');
-        passwordInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                checkPassword();
-            }
-        });
+        // --- GEMINI API SETUP ---
+        const apiKey = ""; // Set by environment
+        const modelId = "gemini-2.5-flash-preview-09-2025";
 
-        function checkPassword() {
-            const pass = document.getElementById('passwordInput').value;
-            const errorMsg = document.getElementById('loginError');
-            const loginScreen = document.getElementById('login-screen');
-            const dashboard = document.getElementById('dashboard-content');
-
-            if (pass === "OPENYOURMIND") {
-                // Sucesso
-                loginScreen.style.opacity = "0";
-                
-                setTimeout(() => {
-                    loginScreen.style.display = "none";
-                    dashboard.style.display = "block";
-                    // Pequeno delay para garantir que o display block foi processado antes de inicializar gráficos
-                    // isso ajuda o Chart.js a calcular o tamanho correto
-                    setTimeout(() => {
-                        dashboard.style.opacity = "1";
-                        initDashboard(); 
-                    }, 50);
-                }, 500);
-
-            } else {
-                // Erro
-                errorMsg.style.opacity = "1";
-                document.getElementById('passwordInput').style.borderColor = "var(--accent-red)";
-                
-                // Shake effect (opcional, simples visual cue)
-                passwordInput.classList.add('shake');
-                setTimeout(() => passwordInput.classList.remove('shake'), 500);
-            }
-        }
-
-        // --- DADOS ATUALIZADOS (Baseados na solicitação) ---
+        // --- DADOS ATUALIZADOS ---
         const summaryData = {
-            revenue: 30910,      // Faturamento Total
-            fixedExpenses: 5393, // Despesas Fixas (Arredondado UP de 5392.77)
-            materials: 4041,     // Materiais (Arredondado DOWN de 4041.46)
-            commissions: 9403,   // Comissões
-            taxes: 2472,         // Impostos (Arredondado DOWN de 2472.80)
-            cardFees: 1828,      // Taxas Cartão (Arredondado DOWN de 1828.40)
-            totalProfit: 7771,   // Lucro Total (Solicitado)
-            totalCost: 23138,    // Custo Total (Solicitado)
-            
-            // Gestão de Tempo
+            revenue: 30910,      
+            fixedExpenses: 5393, 
+            materials: 4041,     
+            commissions: 9403,   
+            taxes: 2472,         
+            cardFees: 1828,      
+            totalProfit: 7771,   
+            totalCost: 23138,    
             totalHours: 176,
             usedHours: 67.17,
             idleHours: 108.83
         };
 
-        // Dados por Procedimento
         const proceduresData = [
             { name: "Clareamento Caseiro", qty: 2, price: 780, totalRevenue: 1560, totalCost: 1092, timeMin: 120, totalTimeH: 4, profit: 468 },
             { name: "Clareamento Consultório", qty: 2, price: 1000, totalRevenue: 2000, totalCost: 1400, timeMin: 180, totalTimeH: 6, profit: 600 },
@@ -550,166 +615,196 @@
             { name: "Rest. Pequena", qty: 20, price: 180, totalRevenue: 3600, totalCost: 2350, timeMin: 30, totalTimeH: 10, profit: 1250 }
         ];
 
-        // --- FUNÇÃO DE INICIALIZAÇÃO DOS GRÁFICOS (CHAMADA SÓ APÓS LOGIN) ---
-        function initDashboard() {
+        // --- AI LOGIC ---
+        function toggleAiPanel() {
+            const panel = document.getElementById('aiPanel');
+            if (panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'flex';
+                // Scroll to bottom
+                const body = document.getElementById('chatBody');
+                body.scrollTop = body.scrollHeight;
+            }
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function askAi(text) {
+            document.getElementById('aiInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            addMessage(text, 'user');
+            input.value = '';
+
+            // 2. Add Loading Indicator
+            const loadingId = addLoading();
+
+            // 3. Prepare Prompt
+            const context = `
+                Você é um CFO Virtual experiente da Clínica Odontológica FACES.
+                
+                DADOS DO MÊS:
+                - Faturamento: R$ ${summaryData.revenue}
+                - Lucro Líquido: R$ ${summaryData.totalProfit} (Margem: 25.14%)
+                - Custos Totais: R$ ${summaryData.totalCost}
+                - Comissões Dentistas: R$ ${summaryData.commissions} (30% do faturamento)
+                - Ociosidade: ${summaryData.idleHours} horas (${((summaryData.idleHours/summaryData.totalHours)*100).toFixed(1)}% da agenda)
+                
+                DETALHE PROCEDIMENTOS (Top Performance):
+                ${JSON.stringify(proceduresData.map(p => ({n: p.name, l: p.profit, m: ((p.profit/p.totalRevenue)*100).toFixed(1)+'%'})))}
+
+                INSTRUÇÃO:
+                Responda à pergunta do usuário com base nesses números. Seja estratégico, curto e use formatação Markdown (negrito, listas). Foque em lucro e eficiência.
+                Pergunta: "${text}"
+            `;
+
+            try {
+                // 4. Call Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: context }] }]
+                    })
+                });
+
+                if (!response.ok) throw new Error('Falha na API');
+
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                // 5. Remove Loading & Add AI Message
+                removeLoading(loadingId);
+                addMessage(aiText, 'ai');
+
+            } catch (error) {
+                removeLoading(loadingId);
+                addMessage("Desculpe, tive um problema ao analisar os dados. Tente novamente.", 'ai');
+                console.error(error);
+            }
+        }
+
+        function addMessage(text, type) {
+            const body = document.getElementById('chatBody');
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
             
-            // --- POPULATE TEXT FIELDS ---
+            if (type === 'ai') {
+                div.innerHTML = marked.parse(text);
+            } else {
+                div.textContent = text;
+            }
+            
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addLoading() {
+            const body = document.getElementById('chatBody');
+            const div = document.createElement('div');
+            div.className = 'message ai loading-dots';
+            div.id = 'loading-' + Date.now();
+            div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+            body.appendChild(div);
+            body.scrollTop = body.scrollHeight;
+            return div.id;
+        }
+
+        function removeLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // --- DASHBOARD INIT (AUTO START) ---
+        window.onload = function() {
+            initDashboard();
+        };
+
+        function initDashboard() {
+            // Populate Fields
             document.getElementById('kpi-revenue').textContent = summaryData.revenue.toLocaleString('pt-BR');
             document.getElementById('kpi-profit').textContent = summaryData.totalProfit.toLocaleString('pt-BR');
-            
-            // Calcular margem
             document.getElementById('kpi-margin').textContent = "25,14"; 
-
             document.getElementById('kpi-cost').textContent = summaryData.totalCost.toLocaleString('pt-BR');
-            
             document.getElementById('hours-total').textContent = summaryData.totalHours;
             document.getElementById('hours-idle').textContent = summaryData.idleHours.toLocaleString('pt-BR');
 
-
-            // --- CHART CONFIGURATION ---
+            // Charts
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
 
-            // 1. Costs Pie Chart
-            const ctxPie = document.getElementById('costsPieChart').getContext('2d');
-            new Chart(ctxPie, {
+            // Pie
+            new Chart(document.getElementById('costsPieChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: ['Lucro Líquido', 'Comissões', 'Despesas Fixas', 'Materiais', 'Impostos', 'Taxas Cartão'],
                     datasets: [{
-                        data: [
-                            summaryData.totalProfit, 
-                            summaryData.commissions, 
-                            summaryData.fixedExpenses, 
-                            summaryData.materials, 
-                            summaryData.taxes, 
-                            summaryData.cardFees
-                        ],
-                        backgroundColor: [
-                            '#10b981', // Lucro (Verde)
-                            '#f59e0b', // Comissões (Laranja)
-                            '#64748b', // Fixos (Cinza)
-                            '#3b82f6', // Materiais (Azul)
-                            '#ef4444', // Impostos (Vermelho)
-                            '#ef4444'  // Taxas (Vermelho)
-                        ],
+                        data: [summaryData.totalProfit, summaryData.commissions, summaryData.fixedExpenses, summaryData.materials, summaryData.taxes, summaryData.cardFees],
+                        backgroundColor: ['#10b981', '#f59e0b', '#64748b', '#3b82f6', '#ef4444', '#ef4444'],
                         borderWidth: 0
                     }]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
-                    }
-                }
+                options: { responsive: true, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } }
             });
 
-            // 2. Stacked Bar Chart
-            const ctxBar = document.getElementById('stackedBarChart').getContext('2d');
-            new Chart(ctxBar, {
+            // Bar
+            new Chart(document.getElementById('stackedBarChart').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: ['Faturamento (100%)'],
                     datasets: [
-                        { label: 'Lucro Líquido', data: [summaryData.totalProfit], backgroundColor: '#10b981' }, // Verde
-                        { label: 'Comissões', data: [summaryData.commissions], backgroundColor: '#f59e0b' }, // Laranja
-                        { label: 'Fixos', data: [summaryData.fixedExpenses], backgroundColor: '#64748b' }, // Cinza
-                        { label: 'Materiais', data: [summaryData.materials], backgroundColor: '#3b82f6' }, // Azul
-                        { label: 'Impostos/Taxas', data: [summaryData.taxes + summaryData.cardFees], backgroundColor: '#ef4444' } // Vermelho
+                        { label: 'Lucro Líquido', data: [summaryData.totalProfit], backgroundColor: '#10b981' },
+                        { label: 'Comissões', data: [summaryData.commissions], backgroundColor: '#f59e0b' },
+                        { label: 'Fixos', data: [summaryData.fixedExpenses], backgroundColor: '#64748b' },
+                        { label: 'Materiais', data: [summaryData.materials], backgroundColor: '#3b82f6' },
+                        { label: 'Impostos/Taxas', data: [summaryData.taxes + summaryData.cardFees], backgroundColor: '#ef4444' }
                     ]
                 },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, display: false } },
-                    plugins: { legend: { position: 'bottom' } }
-                }
+                options: { indexAxis: 'y', responsive: true, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, display: false } }, plugins: { legend: { position: 'bottom' } } }
             });
 
-            // 3. Productivity Chart (Donut)
-            const ctxProd = document.getElementById('productivityChart').getContext('2d');
-            new Chart(ctxProd, {
+            // Productivity
+            new Chart(document.getElementById('productivityChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: ['Ocioso', 'Produtivo'],
-                    datasets: [{
-                        data: [summaryData.idleHours, summaryData.usedHours],
-                        backgroundColor: ['#e2e8f0', '#0f172a'],
-                        hoverOffset: 4
-                    }]
+                    datasets: [{ data: [summaryData.idleHours, summaryData.usedHours], backgroundColor: ['#e2e8f0', '#0f172a'], hoverOffset: 4 }]
                 },
-                options: {
-                    cutout: '70%',
-                    plugins: { legend: { display: false } }
-                }
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
             });
 
-            // 4. Scatter Plot (Time x Profit)
-            const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+            // Scatter
             const scatterData = proceduresData.map(proc => ({
-                x: proc.timeMin, // Tempo em minutos (Eixo X)
-                y: proc.profit / proc.qty, // Lucro unitário (Eixo Y)
-                procedure: proc.name
+                x: proc.timeMin, y: proc.profit / proc.qty, procedure: proc.name
             }));
-
-            new Chart(ctxScatter, {
+            new Chart(document.getElementById('scatterChart').getContext('2d'), {
                 type: 'scatter',
-                data: {
-                    datasets: [{
-                        label: 'Procedimentos',
-                        data: scatterData,
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                        borderColor: '#10b981',
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
+                data: { datasets: [{ label: 'Procedimentos', data: scatterData, backgroundColor: 'rgba(16, 185, 129, 0.6)', borderColor: '#10b981', pointRadius: 6 }] },
                 options: {
                     responsive: true,
-                    scales: {
-                        x: { title: { display: true, text: 'Tempo Gasto (minutos)' } },
-                        y: { title: { display: true, text: 'Lucro Unitário (R$)' } }
-                    },
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let point = context.raw;
-                                    return point.procedure + ': R$ ' + point.y.toFixed(2) + ' (' + point.x + ' min)';
-                                }
-                            }
-                        }
-                    }
+                    scales: { x: { title: { display: true, text: 'Tempo (min)' } }, y: { title: { display: true, text: 'Lucro Unit. (R$)' } } },
+                    plugins: { tooltip: { callbacks: { label: function(c) { return c.raw.procedure + ': R$ ' + c.raw.y.toFixed(2); } } } }
                 }
             });
 
-            // 5. Populate Table
+            // Table
             const tableBody = document.querySelector('#proceduresTable tbody');
-            // Limpa tabela antes de popular para evitar duplicados se init for chamado mais de uma vez (embora não seja aqui)
-            tableBody.innerHTML = ''; 
-            
+            tableBody.innerHTML = '';
             proceduresData.sort((a, b) => b.profit - a.profit).forEach(proc => {
                 const margin = (proc.profit / proc.totalRevenue) * 100;
-                let classification = "";
-                let classColor = "";
-
-                if (margin > 30) { classification = "🟢 Alta Rentabilidade"; classColor = "profit-high"; }
-                else if (margin > 20) { classification = "🟡 Moderado"; classColor = "profit-mid"; }
-                else { classification = "🔴 Baixa/Risco"; classColor = "profit-low"; }
-
-                const row = `
-                    <tr>
-                        <td>${proc.name}</td>
-                        <td>${proc.qty}</td>
-                        <td>R$ ${proc.totalRevenue.toLocaleString('pt-BR')}</td>
-                        <td>R$ ${proc.totalCost.toLocaleString('pt-BR')}</td>
-                        <td>${proc.totalTimeH.toFixed(1)} h</td>
-                        <td class="${classColor}">R$ ${proc.profit.toLocaleString('pt-BR')}</td>
-                        <td>${margin.toFixed(1)}%</td>
-                        <td>${classification}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
+                let classification = margin > 30 ? "🟢 Alta Rentabilidade" : (margin > 20 ? "🟡 Moderado" : "🔴 Baixa/Risco");
+                let classColor = margin > 30 ? "profit-high" : (margin > 20 ? "profit-mid" : "profit-low");
+                tableBody.innerHTML += `<tr><td>${proc.name}</td><td>${proc.qty}</td><td>R$ ${proc.totalRevenue.toLocaleString('pt-BR')}</td><td>R$ ${proc.totalCost.toLocaleString('pt-BR')}</td><td>${proc.totalTimeH.toFixed(1)} h</td><td class="${classColor}">R$ ${proc.profit.toLocaleString('pt-BR')}</td><td>${margin.toFixed(1)}%</td><td>${classification}</td></tr>`;
             });
         }
     </script>
