@@ -32,6 +32,91 @@
             padding-bottom: 50px;
         }
 
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            color: var(--accent-blue);
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.2s;
+            outline: none;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            background-color: #1e293b;
+        }
+
+        .error-msg {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            min-height: 1.2em;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-weight: 600;
+        }
+
         /* --- HEADER & BADGE --- */
         header {
             background: var(--accent-blue);
@@ -79,6 +164,13 @@
         }
 
         /* --- LAYOUT GRID --- */
+        /* Oculto inicialmente até login */
+        #dashboard-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
         .container {
             max-width: 1200px;
             margin: -2rem auto 0;
@@ -224,156 +316,211 @@
 </head>
 <body>
 
-    <!-- 1️⃣ CAPA EXECUTIVA -->
-    <header>
-        <div class="header-content">
-            <h1>Relatório Financeiro Estratégico</h1>
-            <div class="subtitle">Clínica FACES — Análise de Rentabilidade & Capacidade</div>
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="login-logo">Clínica FACES</div>
+            <div class="login-subtitle">Acesso Restrito ao Relatório Executivo</div>
+            
+            <input type="password" id="passwordInput" class="login-input" placeholder="DIGITE A SENHA DE ACESSO">
+            <button class="login-btn" onclick="checkPassword()">Acessar Painel</button>
+            <div id="loginError" class="error-msg">SENHA INCORRETA</div>
         </div>
-        <div class="agency-badge">
-            AGENCY<br>OF<br>THE<br>YEAR.<br><span style="font-weight:400; font-size:0.5rem; opacity:0.8;">Design Systems</span>
-        </div>
-    </header>
+    </div>
 
-    <div class="container">
-
-        <!-- 2️⃣ VISÃO GERAL FINANCEIRA (KPIs) -->
-        <div class="card col-3">
-            <div class="card-title">Faturamento Total</div>
-            <div class="kpi-value">R$ <span id="kpi-revenue"></span></div>
-            <div class="kpi-sub">Receita bruta mensal</div>
-        </div>
-        <div class="card col-3">
-            <div class="card-title">Lucro Total</div>
-            <div class="kpi-value text-green">R$ <span id="kpi-profit"></span></div>
-            <div class="kpi-sub">Líquido após despesas</div>
-        </div>
-        <div class="card col-3">
-            <div class="card-title">Margem Líquida</div>
-            <div class="kpi-value text-green"><span id="kpi-margin"></span>%</div>
-            <div class="kpi-sub">Saúde financeira: Saudável</div>
-        </div>
-        <div class="card col-3">
-            <div class="card-title">Custo Total</div>
-            <div class="kpi-value text-red">R$ <span id="kpi-cost"></span></div>
-            <div class="kpi-sub">Operacional + Variável</div>
-        </div>
-
-        <!-- 3️⃣ ANÁLISE DE CUSTOS & PIZZA -->
-        <div class="card col-4">
-            <div class="card-title">Distribuição do Faturamento</div>
-            <canvas id="costsPieChart"></canvas>
-            <div class="insight-box">
-                "Note que a fatia das Comissões (30%) é maior que o próprio Lucro da clínica (25%)."
+    <!-- CONTEÚDO DO DASHBOARD (Oculto inicialmente) -->
+    <div id="dashboard-content">
+        <!-- 1️⃣ CAPA EXECUTIVA -->
+        <header>
+            <div class="header-content">
+                <h1>Relatório Financeiro Estratégico</h1>
+                <div class="subtitle">Clínica FACES — Análise de Rentabilidade & Capacidade</div>
             </div>
-        </div>
-
-        <div class="card col-8">
-            <div class="card-title">Destino do Faturamento (Perspectiva de Lucro)</div>
-            <canvas id="stackedBarChart" height="120"></canvas>
-            <div style="margin-top: 15px; font-size: 0.9rem; color: #475569;">
-                <strong>Perspectiva Real:</strong> Observe a barra verde em relação ao todo. Para cada R$ 100,00 que entram na clínica, <strong>apenas R$ 25,00 permanecem como lucro real</strong>. O maior volume de saída (Laranja) são as comissões, que competem diretamente com a margem da empresa.
+            <div class="agency-badge">
+                AGENCY<br>OF<br>THE<br>YEAR.<br><span style="font-weight:400; font-size:0.5rem; opacity:0.8;">Design Systems</span>
             </div>
-        </div>
+        </header>
 
-        <!-- 4️⃣ ANÁLISE DE PRODUTIVIDADE -->
-        <div class="card col-6">
-            <div class="card-title">Capacidade vs. Ociosidade</div>
-            <div style="display: flex; align-items: center; justify-content: space-around;">
-                <div style="width: 180px;">
-                    <canvas id="productivityChart"></canvas>
-                </div>
-                <div>
-                    <div class="alert-badge">ALERTA DE EFICIÊNCIA</div>
-                    <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary);">62%</div>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">da agenda disponível não foi utilizada.</div>
-                    <br>
-                    <div><strong>Horas Totais:</strong> <span id="hours-total"></span>h</div>
-                    <div><strong>Horas Ociosas:</strong> <span id="hours-idle"></span>h</div>
+        <div class="container">
+
+            <!-- 2️⃣ VISÃO GERAL FINANCEIRA (KPIs) -->
+            <div class="card col-3">
+                <div class="card-title">Faturamento Total</div>
+                <div class="kpi-value">R$ <span id="kpi-revenue"></span></div>
+                <div class="kpi-sub">Receita bruta mensal</div>
+            </div>
+            <div class="card col-3">
+                <div class="card-title">Lucro Total</div>
+                <div class="kpi-value text-green">R$ <span id="kpi-profit"></span></div>
+                <div class="kpi-sub">Líquido após despesas</div>
+            </div>
+            <div class="card col-3">
+                <div class="card-title">Margem Líquida</div>
+                <div class="kpi-value text-green"><span id="kpi-margin"></span>%</div>
+                <div class="kpi-sub">Saúde financeira: Saudável</div>
+            </div>
+            <div class="card col-3">
+                <div class="card-title">Custo Total</div>
+                <div class="kpi-value text-red">R$ <span id="kpi-cost"></span></div>
+                <div class="kpi-sub">Operacional + Variável</div>
+            </div>
+
+            <!-- 3️⃣ ANÁLISE DE CUSTOS & PIZZA -->
+            <div class="card col-4">
+                <div class="card-title">Distribuição do Faturamento</div>
+                <canvas id="costsPieChart"></canvas>
+                <div class="insight-box">
+                    "Note que a fatia das Comissões (30%) é maior que o próprio Lucro da clínica (25%)."
                 </div>
             </div>
-            <div class="insight-box">
-                "A clínica não tem um problema grave de custos, mas um enorme potencial desperdiçado de agenda. O custo fixo está sendo diluído em poucas horas."
-            </div>
-        </div>
 
-        <!-- 6️⃣ MATRIZ TEMPO × LUCRO -->
-        <div class="card col-6">
-            <div class="card-title">Matriz de Ouro: Tempo vs. Lucro</div>
-            <canvas id="scatterChart"></canvas>
-            <div class="insight-box">
-                <strong>Quadrante Superior Esquerdo:</strong> Procedimentos rápidos e lucrativos (Facetas, Limpezas).
-                <br><strong>Quadrante Inferior Direito:</strong> Procedimentos longos e de menor margem.
-            </div>
-        </div>
-
-        <!-- 5️⃣ ANÁLISE POR PROCEDIMENTO (TABELA) -->
-        <div class="card col-12">
-            <div class="card-title">Rentabilidade por Procedimento (Top Performance)</div>
-            <div class="table-container">
-                <table id="proceduresTable">
-                    <thead>
-                        <tr>
-                            <th>Procedimento</th>
-                            <th>Qtd</th>
-                            <th>Receita Total</th>
-                            <th>Custo Total</th>
-                            <th>Tempo Total</th>
-                            <th>Lucro Líquido</th>
-                            <th>Margem</th>
-                            <th>Classificação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Preenchido via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 7️⃣ SIMULAÇÕES -->
-        <div class="card col-12">
-            <div class="card-title">Simulações de Cenário (What If)</div>
-            <div class="simulation-grid">
-                <div class="sim-card">
-                    <div class="sim-title">Cenário A: +3 Facetas/mês</div>
-                    <div class="sim-impact">+ R$ 1.650,00 Lucro</div>
-                    <p style="font-size: 0.8rem; color: #64748b;">Utilizando apenas 1h 45min da ociosidade atual.</p>
-                </div>
-                <div class="sim-card">
-                    <div class="sim-title">Cenário B: Ocupar 50% da Ociosidade</div>
-                    <div class="sim-impact">+ R$ 6.200,00 Lucro</div>
-                    <p style="font-size: 0.8rem; color: #64748b;">Considerando mix atual de serviços. Margem subiria para 32%.</p>
-                </div>
-                <div class="sim-card">
-                    <div class="sim-title">Cenário C: Redução Taxa Cartão (2%)</div>
-                    <div class="sim-impact">+ R$ 450,00/mês</div>
-                    <p style="font-size: 0.8rem; color: #64748b;">Ajuste financeiro simples sem esforço clínico.</p>
+            <div class="card col-8">
+                <div class="card-title">Destino do Faturamento (Perspectiva de Lucro)</div>
+                <canvas id="stackedBarChart" height="120"></canvas>
+                <div style="margin-top: 15px; font-size: 0.9rem; color: #475569;">
+                    <strong>Perspectiva Real:</strong> Observe a barra verde em relação ao todo. Para cada R$ 100,00 que entram na clínica, <strong>apenas R$ 25,00 permanecem como lucro real</strong>. O maior volume de saída (Laranja) são as comissões, que competem diretamente com a margem da empresa.
                 </div>
             </div>
-        </div>
 
-        <!-- 8️⃣ & 9️⃣ DIAGNÓSTICO E RECOMENDAÇÕES -->
-        <div class="card col-6">
-            <div class="card-title">Diagnóstico Final</div>
-            <ul class="rec-list">
-                <li><strong>Dependência de Comissões:</strong> Modelo de repasse (30%) é alto. Em procedimentos de baixo valor agregado, o lucro da clínica fica comprimido.</li>
-                <li><strong>Ociosidade Crítica:</strong> Com 108 horas livres, a clínica está pagando aluguel e custos fixos para manter a sala vazia na maior parte do tempo.</li>
-                <li><strong>Mix de Produtos:</strong> Facetas e Limpezas sustentam a rentabilidade. Procedimentos longos como Clareamento de Consultório (3h) entregam margem menor por hora.</li>
-            </ul>
-        </div>
-        <div class="card col-6" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
-            <div class="card-title" style="color: #166534;">Recomendações Estratégicas</div>
-            <ul class="rec-list" style="color: #14532d;">
-                <li><strong>Curto Prazo (30 dias):</strong> Campanha focada em preencher "buracos" na agenda com Limpezas (procedimento âncora de alta margem/hora).</li>
-                <li><strong>Médio Prazo:</strong> Revisar precificação de procedimentos que levam mais de 2 horas.</li>
-                <li><strong>Estrutural:</strong> Negociar taxa escalonada de comissão (ex: 25% base + 5% bônus por meta) para proteger a margem da clínica.</li>
-            </ul>
-        </div>
+            <!-- 4️⃣ ANÁLISE DE PRODUTIVIDADE -->
+            <div class="card col-6">
+                <div class="card-title">Capacidade vs. Ociosidade</div>
+                <div style="display: flex; align-items: center; justify-content: space-around;">
+                    <div style="width: 180px;">
+                        <canvas id="productivityChart"></canvas>
+                    </div>
+                    <div>
+                        <div class="alert-badge">ALERTA DE EFICIÊNCIA</div>
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary);">62%</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">da agenda disponível não foi utilizada.</div>
+                        <br>
+                        <div><strong>Horas Totais:</strong> <span id="hours-total"></span>h</div>
+                        <div><strong>Horas Ociosas:</strong> <span id="hours-idle"></span>h</div>
+                    </div>
+                </div>
+                <div class="insight-box">
+                    "A clínica não tem um problema grave de custos, mas um enorme potencial desperdiçado de agenda. O custo fixo está sendo diluído em poucas horas."
+                </div>
+            </div>
 
+            <!-- 6️⃣ MATRIZ TEMPO × LUCRO -->
+            <div class="card col-6">
+                <div class="card-title">Matriz de Ouro: Tempo vs. Lucro</div>
+                <canvas id="scatterChart"></canvas>
+                <div class="insight-box">
+                    <strong>Quadrante Superior Esquerdo:</strong> Procedimentos rápidos e lucrativos (Facetas, Limpezas).
+                    <br><strong>Quadrante Inferior Direito:</strong> Procedimentos longos e de menor margem.
+                </div>
+            </div>
+
+            <!-- 5️⃣ ANÁLISE POR PROCEDIMENTO (TABELA) -->
+            <div class="card col-12">
+                <div class="card-title">Rentabilidade por Procedimento (Top Performance)</div>
+                <div class="table-container">
+                    <table id="proceduresTable">
+                        <thead>
+                            <tr>
+                                <th>Procedimento</th>
+                                <th>Qtd</th>
+                                <th>Receita Total</th>
+                                <th>Custo Total</th>
+                                <th>Tempo Total</th>
+                                <th>Lucro Líquido</th>
+                                <th>Margem</th>
+                                <th>Classificação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 7️⃣ SIMULAÇÕES -->
+            <div class="card col-12">
+                <div class="card-title">Simulações de Cenário (What If)</div>
+                <div class="simulation-grid">
+                    <div class="sim-card">
+                        <div class="sim-title">Cenário A: +3 Facetas/mês</div>
+                        <div class="sim-impact">+ R$ 1.650,00 Lucro</div>
+                        <p style="font-size: 0.8rem; color: #64748b;">Utilizando apenas 1h 45min da ociosidade atual.</p>
+                    </div>
+                    <div class="sim-card">
+                        <div class="sim-title">Cenário B: Ocupar 50% da Ociosidade</div>
+                        <div class="sim-impact">+ R$ 6.200,00 Lucro</div>
+                        <p style="font-size: 0.8rem; color: #64748b;">Considerando mix atual de serviços. Margem subiria para 32%.</p>
+                    </div>
+                    <div class="sim-card">
+                        <div class="sim-title">Cenário C: Redução Taxa Cartão (2%)</div>
+                        <div class="sim-impact">+ R$ 450,00/mês</div>
+                        <p style="font-size: 0.8rem; color: #64748b;">Ajuste financeiro simples sem esforço clínico.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8️⃣ & 9️⃣ DIAGNÓSTICO E RECOMENDAÇÕES -->
+            <div class="card col-6">
+                <div class="card-title">Diagnóstico Final</div>
+                <ul class="rec-list">
+                    <li><strong>Dependência de Comissões:</strong> Modelo de repasse (30%) é alto. Em procedimentos de baixo valor agregado, o lucro da clínica fica comprimido.</li>
+                    <li><strong>Ociosidade Crítica:</strong> Com 108 horas livres, a clínica está pagando aluguel e custos fixos para manter a sala vazia na maior parte do tempo.</li>
+                    <li><strong>Mix de Produtos:</strong> Facetas e Limpezas sustentam a rentabilidade. Procedimentos longos como Clareamento de Consultório (3h) entregam margem menor por hora.</li>
+                </ul>
+            </div>
+            <div class="card col-6" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                <div class="card-title" style="color: #166534;">Recomendações Estratégicas</div>
+                <ul class="rec-list" style="color: #14532d;">
+                    <li><strong>Curto Prazo (30 dias):</strong> Campanha focada em preencher "buracos" na agenda com Limpezas (procedimento âncora de alta margem/hora).</li>
+                    <li><strong>Médio Prazo:</strong> Revisar precificação de procedimentos que levam mais de 2 horas.</li>
+                    <li><strong>Estrutural:</strong> Negociar taxa escalonada de comissão (ex: 25% base + 5% bônus por meta) para proteger a margem da clínica.</li>
+                </ul>
+            </div>
+
+        </div>
     </div>
 
     <script>
+        // --- AUTH LOGIC ---
+        const passwordInput = document.getElementById('passwordInput');
+        passwordInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+
+        function checkPassword() {
+            const pass = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('loginError');
+            const loginScreen = document.getElementById('login-screen');
+            const dashboard = document.getElementById('dashboard-content');
+
+            if (pass === "OPENYOURMIND") {
+                // Sucesso
+                loginScreen.style.opacity = "0";
+                
+                setTimeout(() => {
+                    loginScreen.style.display = "none";
+                    dashboard.style.display = "block";
+                    // Pequeno delay para garantir que o display block foi processado antes de inicializar gráficos
+                    // isso ajuda o Chart.js a calcular o tamanho correto
+                    setTimeout(() => {
+                        dashboard.style.opacity = "1";
+                        initDashboard(); 
+                    }, 50);
+                }, 500);
+
+            } else {
+                // Erro
+                errorMsg.style.opacity = "1";
+                document.getElementById('passwordInput').style.borderColor = "var(--accent-red)";
+                
+                // Shake effect (opcional, simples visual cue)
+                passwordInput.classList.add('shake');
+                setTimeout(() => passwordInput.classList.remove('shake'), 500);
+            }
+        }
+
         // --- DADOS ATUALIZADOS (Baseados na solicitação) ---
         const summaryData = {
             revenue: 30910,      // Faturamento Total
@@ -391,7 +538,7 @@
             idleHours: 108.83
         };
 
-        // Dados por Procedimento (Mantidos proporcionais para gráficos)
+        // Dados por Procedimento
         const proceduresData = [
             { name: "Clareamento Caseiro", qty: 2, price: 780, totalRevenue: 1560, totalCost: 1092, timeMin: 120, totalTimeH: 4, profit: 468 },
             { name: "Clareamento Consultório", qty: 2, price: 1000, totalRevenue: 2000, totalCost: 1400, timeMin: 180, totalTimeH: 6, profit: 600 },
@@ -403,163 +550,168 @@
             { name: "Rest. Pequena", qty: 20, price: 180, totalRevenue: 3600, totalCost: 2350, timeMin: 30, totalTimeH: 10, profit: 1250 }
         ];
 
-        // --- POPULATE TEXT FIELDS ---
-        document.getElementById('kpi-revenue').textContent = summaryData.revenue.toLocaleString('pt-BR');
-        document.getElementById('kpi-profit').textContent = summaryData.totalProfit.toLocaleString('pt-BR');
-        
-        // Calcular margem baseada nos novos números
-        const margin = (summaryData.totalProfit / summaryData.revenue * 100).toFixed(2);
-        document.getElementById('kpi-margin').textContent = "25,14"; // Fixado conforme pedido, ou usar variável 'margin' se quiser dinâmico
+        // --- FUNÇÃO DE INICIALIZAÇÃO DOS GRÁFICOS (CHAMADA SÓ APÓS LOGIN) ---
+        function initDashboard() {
+            
+            // --- POPULATE TEXT FIELDS ---
+            document.getElementById('kpi-revenue').textContent = summaryData.revenue.toLocaleString('pt-BR');
+            document.getElementById('kpi-profit').textContent = summaryData.totalProfit.toLocaleString('pt-BR');
+            
+            // Calcular margem
+            document.getElementById('kpi-margin').textContent = "25,14"; 
 
-        document.getElementById('kpi-cost').textContent = summaryData.totalCost.toLocaleString('pt-BR');
-        
-        document.getElementById('hours-total').textContent = summaryData.totalHours;
-        document.getElementById('hours-idle').textContent = summaryData.idleHours.toLocaleString('pt-BR');
+            document.getElementById('kpi-cost').textContent = summaryData.totalCost.toLocaleString('pt-BR');
+            
+            document.getElementById('hours-total').textContent = summaryData.totalHours;
+            document.getElementById('hours-idle').textContent = summaryData.idleHours.toLocaleString('pt-BR');
 
 
-        // --- CHART CONFIGURATION ---
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#64748b';
+            // --- CHART CONFIGURATION ---
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
 
-        // 1. Costs Pie Chart
-        const ctxPie = document.getElementById('costsPieChart').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['Lucro Líquido', 'Comissões', 'Despesas Fixas', 'Materiais', 'Impostos', 'Taxas Cartão'],
-                datasets: [{
-                    data: [
-                        summaryData.totalProfit, 
-                        summaryData.commissions, 
-                        summaryData.fixedExpenses, 
-                        summaryData.materials, 
-                        summaryData.taxes, 
-                        summaryData.cardFees
-                    ],
-                    backgroundColor: [
-                        '#10b981', // Lucro (Verde)
-                        '#f59e0b', // Comissões (Laranja)
-                        '#64748b', // Fixos (Cinza)
-                        '#3b82f6', // Materiais (Azul)
-                        '#ef4444', // Impostos (Vermelho)
-                        '#ef4444'  // Taxas (Vermelho)
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
-                }
-            }
-        });
-
-        // 2. Stacked Bar Chart
-        const ctxBar = document.getElementById('stackedBarChart').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: ['Faturamento (100%)'],
-                datasets: [
-                    { label: 'Lucro Líquido', data: [summaryData.totalProfit], backgroundColor: '#10b981' }, // Verde
-                    { label: 'Comissões', data: [summaryData.commissions], backgroundColor: '#f59e0b' }, // Laranja
-                    { label: 'Fixos', data: [summaryData.fixedExpenses], backgroundColor: '#64748b' }, // Cinza
-                    { label: 'Materiais', data: [summaryData.materials], backgroundColor: '#3b82f6' }, // Azul
-                    { label: 'Impostos/Taxas', data: [summaryData.taxes + summaryData.cardFees], backgroundColor: '#ef4444' } // Vermelho
-                ]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, display: false } },
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-
-        // 3. Productivity Chart (Donut)
-        const ctxProd = document.getElementById('productivityChart').getContext('2d');
-        new Chart(ctxProd, {
-            type: 'doughnut',
-            data: {
-                labels: ['Ocioso', 'Produtivo'],
-                datasets: [{
-                    data: [summaryData.idleHours, summaryData.usedHours],
-                    backgroundColor: ['#e2e8f0', '#0f172a'],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                cutout: '70%',
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // 4. Scatter Plot (Time x Profit)
-        const ctxScatter = document.getElementById('scatterChart').getContext('2d');
-        const scatterData = proceduresData.map(proc => ({
-            x: proc.timeMin, // Tempo em minutos (Eixo X)
-            y: proc.profit / proc.qty, // Lucro unitário (Eixo Y)
-            procedure: proc.name
-        }));
-
-        new Chart(ctxScatter, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Procedimentos',
-                    data: scatterData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                    borderColor: '#10b981',
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: { title: { display: true, text: 'Tempo Gasto (minutos)' } },
-                    y: { title: { display: true, text: 'Lucro Unitário (R$)' } }
+            // 1. Costs Pie Chart
+            const ctxPie = document.getElementById('costsPieChart').getContext('2d');
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Lucro Líquido', 'Comissões', 'Despesas Fixas', 'Materiais', 'Impostos', 'Taxas Cartão'],
+                    datasets: [{
+                        data: [
+                            summaryData.totalProfit, 
+                            summaryData.commissions, 
+                            summaryData.fixedExpenses, 
+                            summaryData.materials, 
+                            summaryData.taxes, 
+                            summaryData.cardFees
+                        ],
+                        backgroundColor: [
+                            '#10b981', // Lucro (Verde)
+                            '#f59e0b', // Comissões (Laranja)
+                            '#64748b', // Fixos (Cinza)
+                            '#3b82f6', // Materiais (Azul)
+                            '#ef4444', // Impostos (Vermelho)
+                            '#ef4444'  // Taxas (Vermelho)
+                        ],
+                        borderWidth: 0
+                    }]
                 },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let point = context.raw;
-                                return point.procedure + ': R$ ' + point.y.toFixed(2) + ' (' + point.x + ' min)';
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // 2. Stacked Bar Chart
+            const ctxBar = document.getElementById('stackedBarChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Faturamento (100%)'],
+                    datasets: [
+                        { label: 'Lucro Líquido', data: [summaryData.totalProfit], backgroundColor: '#10b981' }, // Verde
+                        { label: 'Comissões', data: [summaryData.commissions], backgroundColor: '#f59e0b' }, // Laranja
+                        { label: 'Fixos', data: [summaryData.fixedExpenses], backgroundColor: '#64748b' }, // Cinza
+                        { label: 'Materiais', data: [summaryData.materials], backgroundColor: '#3b82f6' }, // Azul
+                        { label: 'Impostos/Taxas', data: [summaryData.taxes + summaryData.cardFees], backgroundColor: '#ef4444' } // Vermelho
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, display: false } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // 3. Productivity Chart (Donut)
+            const ctxProd = document.getElementById('productivityChart').getContext('2d');
+            new Chart(ctxProd, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ocioso', 'Produtivo'],
+                    datasets: [{
+                        data: [summaryData.idleHours, summaryData.usedHours],
+                        backgroundColor: ['#e2e8f0', '#0f172a'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 4. Scatter Plot (Time x Profit)
+            const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+            const scatterData = proceduresData.map(proc => ({
+                x: proc.timeMin, // Tempo em minutos (Eixo X)
+                y: proc.profit / proc.qty, // Lucro unitário (Eixo Y)
+                procedure: proc.name
+            }));
+
+            new Chart(ctxScatter, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Procedimentos',
+                        data: scatterData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10b981',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Tempo Gasto (minutos)' } },
+                        y: { title: { display: true, text: 'Lucro Unitário (R$)' } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let point = context.raw;
+                                    return point.procedure + ': R$ ' + point.y.toFixed(2) + ' (' + point.x + ' min)';
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        // 5. Populate Table
-        const tableBody = document.querySelector('#proceduresTable tbody');
-        proceduresData.sort((a, b) => b.profit - a.profit).forEach(proc => {
-            const margin = (proc.profit / proc.totalRevenue) * 100;
-            let classification = "";
-            let classColor = "";
+            // 5. Populate Table
+            const tableBody = document.querySelector('#proceduresTable tbody');
+            // Limpa tabela antes de popular para evitar duplicados se init for chamado mais de uma vez (embora não seja aqui)
+            tableBody.innerHTML = ''; 
+            
+            proceduresData.sort((a, b) => b.profit - a.profit).forEach(proc => {
+                const margin = (proc.profit / proc.totalRevenue) * 100;
+                let classification = "";
+                let classColor = "";
 
-            if (margin > 30) { classification = "🟢 Alta Rentabilidade"; classColor = "profit-high"; }
-            else if (margin > 20) { classification = "🟡 Moderado"; classColor = "profit-mid"; }
-            else { classification = "🔴 Baixa/Risco"; classColor = "profit-low"; }
+                if (margin > 30) { classification = "🟢 Alta Rentabilidade"; classColor = "profit-high"; }
+                else if (margin > 20) { classification = "🟡 Moderado"; classColor = "profit-mid"; }
+                else { classification = "🔴 Baixa/Risco"; classColor = "profit-low"; }
 
-            const row = `
-                <tr>
-                    <td>${proc.name}</td>
-                    <td>${proc.qty}</td>
-                    <td>R$ ${proc.totalRevenue.toLocaleString('pt-BR')}</td>
-                    <td>R$ ${proc.totalCost.toLocaleString('pt-BR')}</td>
-                    <td>${proc.totalTimeH.toFixed(1)} h</td>
-                    <td class="${classColor}">R$ ${proc.profit.toLocaleString('pt-BR')}</td>
-                    <td>${margin.toFixed(1)}%</td>
-                    <td>${classification}</td>
-                </tr>
-            `;
-            tableBody.innerHTML += row;
-        });
-
+                const row = `
+                    <tr>
+                        <td>${proc.name}</td>
+                        <td>${proc.qty}</td>
+                        <td>R$ ${proc.totalRevenue.toLocaleString('pt-BR')}</td>
+                        <td>R$ ${proc.totalCost.toLocaleString('pt-BR')}</td>
+                        <td>${proc.totalTimeH.toFixed(1)} h</td>
+                        <td class="${classColor}">R$ ${proc.profit.toLocaleString('pt-BR')}</td>
+                        <td>${margin.toFixed(1)}%</td>
+                        <td>${classification}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
     </script>
 </body>
 </html>
