@@ -1,0 +1,558 @@
+import React, { useState } from 'react';
+import { 
+  Activity, 
+  Users, 
+  Target, 
+  Layers, 
+  TrendingUp, 
+  Briefcase, 
+  Zap, 
+  ShieldAlert, 
+  Calendar, 
+  BarChart3,
+  ChevronRight,
+  ArrowUpRight,
+  Stethoscope,
+  Globe,
+  PieChart,
+  Search,
+  Box,
+  Sparkles,
+  Rocket,
+  Lightbulb,
+  MapPin,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  ShieldCheck,
+  TrendingDown
+} from 'lucide-react';
+
+const App = () => {
+  return (
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden">
+      {/* Elementos Decorativos de Fundo - Swiss Style */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0 overflow-hidden">
+        <Box className="absolute -top-20 -right-20 w-96 h-96" />
+        <Activity className="absolute bottom-40 -left-20 w-80 h-80" />
+      </div>
+
+      {/* Header Estilo Editorial */}
+      <header className="relative z-10 px-6 py-20 border-b border-black md:px-20 lg:px-40 bg-[#fafafa]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-2 mb-8 text-sm font-bold tracking-tighter uppercase">
+            <Activity className="w-5 h-5 text-blue-600" />
+            <span>Relatório Estratégico 20252/26</span>
+          </div>
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] mb-12">
+            ODONTO<br />
+            STRATEGY<br />
+            <span className="text-gray-300">MONTES CLAROS</span>
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-black pt-8">
+            <p className="text-sm uppercase font-medium leading-tight">
+              Análise de Mercado, Público-Alvo e<br /> Planejamento para o Norte de Minas Gerais.
+            </p>
+            <div className="flex justify-end items-end gap-4">
+              <div className="flex -space-x-2">
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-500"></div>
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-200"></div>
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-black"></div>
+              </div>
+              <span className="text-8xl font-black opacity-10 leading-none">01</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Seção 1: Contexto */}
+      <section className="relative z-10 px-6 py-24 md:px-20 lg:px-40 max-w-7xl mx-auto border-b border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-4">
+            <div className="sticky top-8 space-y-4">
+               <Globe className="w-12 h-12 text-blue-600 mb-4" />
+               <h2 className="text-4xl font-black tracking-tighter italic underline decoration-blue-500 uppercase">
+                Contexto e Panorama Geral
+              </h2>
+              <div className="h-1 w-20 bg-black"></div>
+            </div>
+          </div>
+          <div className="lg:col-span-8 space-y-12">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-blue-500" /> Cenário atual — Montes Claros / Norte de MG
+              </h3>
+              <p className="text-2xl font-medium leading-relaxed mb-6">
+                Mercado em expansão, mas com nuances competitivas:
+              </p>
+              <ul className="space-y-6 text-lg text-gray-700">
+                <li className="pl-6 border-l-4 border-black relative">
+                  Montes Claros é referência regional em saúde bucal, incluindo centros de especialidades odontológicas (CEOs) pelo SUS e serviços hospitalares especializados (Santa Casa e Hospital das Clínicas) para casos complexos e necessidades especiais, reforçando a oferta pública de serviços e atraindo pacientes de municípios vizinhos.
+                </li>
+                <li className="pl-6 border-l-4 border-black">
+                  A demanda por serviços odontológicos tem aumentado ano a ano (estimativas de ~15% ao ano), estimulada por maior consciência de saúde bucal e crescimento da população urbana/urbana-complexa.
+                </li>
+              </ul>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="p-8 bg-gray-50 border border-gray-100 rounded-3xl relative overflow-hidden group">
+                <TrendingUp className="absolute -bottom-4 -right-4 w-24 h-24 text-black opacity-[0.03] group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-bold uppercase block mb-4 flex items-center gap-2">
+                   <Target className="w-4 h-4" /> Grau de saturação
+                </span>
+                <p className="text-gray-700 relative z-10">Moderado a alto nas áreas centrais e bairros próximos ao centro, com boa oferta de consultórios independentes, clínicas e profissionais autônomos. A saturação aparente se concentra em serviços básicos/rotineiros (limpeza, restaurações, extrações), enquanto serviços de alta especialização, estética e gestão diferenciada ainda têm espaço de crescimento.</p>
+              </div>
+              <div className="p-8 bg-gray-50 border border-gray-100 rounded-3xl relative overflow-hidden group">
+                <Users className="absolute -bottom-4 -right-4 w-24 h-24 text-black opacity-[0.03] group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-bold uppercase block mb-4 flex items-center gap-2">
+                   <Briefcase className="w-4 h-4" /> Perfil médio das clínicas
+                </span>
+                <p className="text-gray-700 relative z-10">Predominantemente pequenas e médias, muitas em formato de consultório individual com 1–3 profissionais. Mistura de atendimento particular e convênios básicos; convênios populares são comuns, mas muitos odontologistas veem margens reduzidas nesses contratos.</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <h4 className="font-bold text-xl flex items-center gap-3">
+                <Layers className="w-6 h-6 text-blue-600" /> Nível de profissionalização da gestão:
+              </h4>
+              <p className="text-lg text-gray-600">Gestão operacional e clínica prevalece sobre gestão estratégica; poucos empreendimentos têm estrutura de gestão corporativa (KPIs, funil comercial, CRM, marketing digital estruturado, indicadores financeiros). A maioria depende de redes sociais e indicações diretas para aquisição de pacientes.</p>
+            </div>
+
+            <div className="bg-black text-white p-12 rounded-3xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-20">
+                <ShieldAlert className="w-32 h-32" />
+              </div>
+              <h4 className="text-2xl font-bold mb-8 relative z-10">Principais desafios enfrentados:</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+                {[
+                  "Competição por preço em serviços básicos.", 
+                  "Captação e retenção de pacientes confiáveis.", 
+                  "Investimento em tecnologia (equipamentos modernos) é um entrave devido a custo elevado de aquisição no Brasil.", 
+                  "Dificuldade em estabelecer diferenciação clara de serviços e experiência do paciente."
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-4 items-start group">
+                    <span className="text-blue-400 font-black group-hover:translate-x-1 transition-transform">/ 0{i+1}</span>
+                    <p className="text-sm text-gray-300 leading-tight">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-8">
+              <h3 className="text-4xl font-black tracking-tighter mb-8 flex items-center gap-4">
+                <TrendingUp className="text-blue-500 w-10 h-10" /> Tendências recentes e emergentes
+              </h3>
+              <div className="space-y-8">
+                {[
+                  { label: "Comportamento dos pacientes", content: "Maior ênfase em estética e autoestima, não apenas saúde funcional. A busca por clareamento, lentesque, alinhadores estéticos e melhorias estéticas cresceu nacionalmente e influencia hábitos locais. Consumidores estão mais informados e exigentes — buscam experiência além do procedimento clínico.", icon: <Sparkles className="w-5 h-5"/> },
+                  { label: "Mudanças no modelo de consumo", content: "Crescimento de interesse por teleodontologia e agendamento digital. Relutância em divulgar preços online (cultura de comunicação via WhatsApp é dominante).", icon: <Rocket className="w-5 h-5"/> },
+                  { label: "Digitalização, marketing e experiência", content: "Clínicas com presença digital estruturada (Redes Sociais + SEO + Chatbots/agendamento) tendem a capturar maior participação de mercado. Experiência do paciente (comunicação clara, tempo de espera, ambiente acolhedor) torna-se diferencial competitivo.", icon: <Globe className="w-5 h-5"/> }
+                ].map((item, idx) => (
+                  <div key={idx} className="group border-b border-gray-100 pb-6 last:border-0">
+                    <span className="text-xs font-black uppercase text-blue-500 mb-2 flex items-center gap-2">
+                      {item.icon} {item.label}
+                    </span>
+                    <p className="text-xl leading-relaxed">{item.content}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção 2: Público Alvo */}
+      <section className="relative z-10 px-6 py-24 md:px-20 lg:px-40 bg-[#0a0a0a] text-white overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
+          <Users className="w-[800px] h-[800px]" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <h2 className="text-6xl font-black tracking-tighter leading-none">PERFIL DO <br/><span className="text-blue-500 tracking-[10px]">PÚBLICO-ALVO</span></h2>
+            <div className="text-right">
+              <Users className="w-16 h-16 ml-auto mb-4 text-gray-600" />
+              <p className="text-xs uppercase font-bold text-gray-400 tracking-widest flex items-center justify-end gap-2">
+                <PieChart className="w-4 h-4" /> Segmentação e Comportamento
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+            {[
+              { age: "18-35", title: "Jovens adultos", desc: "estética e prevenção; alto uso de mídias sociais." },
+              { age: "36-60", title: "Adultos", desc: "manutenção, reabilitação e estético funcional." },
+              { age: "60+", title: "Idosos", desc: "alta demanda por próteses, periodontia e cuidados continuados." }
+            ].map((item, i) => (
+              <div key={i} className="p-8 border border-white/10 hover:border-blue-500 transition-all group">
+                <span className="text-5xl font-black opacity-20 block mb-6 group-hover:text-blue-500 group-hover:opacity-100 transition-all">{item.age}</span>
+                <h4 className="font-bold text-xl mb-4">{item.title}</h4>
+                <p className="text-gray-400">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+            <div className="space-y-12">
+              <div className="p-6 border-l-2 border-blue-500 bg-white/5">
+                <h3 className="text-sm font-bold uppercase text-blue-500 mb-6 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4" /> Renda
+                </h3>
+                <p className="text-2xl font-light">Variada — de baixa/média à média/alta. A maior parte da população local tem renda média; patamares altos concentram serviços premium em áreas centrais.</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-bold uppercase text-blue-500 mb-6 flex items-center gap-2">
+                  <Target className="w-4 h-4" /> Motivações principais
+                </h3>
+                <ul className="grid grid-cols-1 gap-4">
+                  {[
+                    "Estética e autoestima: clareamento, lentes, alinhadores (em crescimento).",
+                    "Funcionalidade e dor: tratamento de cáries, canal, extrações.",
+                    "Prevenção: check-ups regulares.",
+                    "Urgência: dor intensa e problemas agudos."
+                  ].map((text, i) => (
+                    <li key={i} className="flex items-center gap-4 text-lg group">
+                      <div className="w-2 h-2 bg-blue-500 rotate-45 group-hover:scale-150 transition-transform"></div> {text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-white/5 p-10 rounded-xl space-y-10 border border-white/5 relative">
+              <div className="absolute top-4 right-4 text-white/10">
+                 <Search className="w-12 h-12" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold uppercase text-blue-500 mb-4 flex items-center gap-2">
+                  <Activity className="w-4 h-4" /> Sensibilidade
+                </h3>
+                <p className="text-lg opacity-80">Segmento de baixa renda é sensível a preços, priorizando conveniência e custo. Segmento de renda média/alta valoriza experiência, reputação e tecnologia mais que preço.</p>
+              </div>
+              <div className="border-t border-white/10 pt-10">
+                <h3 className="text-4xl font-black tracking-tighter mb-8 italic flex items-center gap-4">
+                  <Search className="w-8 h-8 text-blue-500" /> Processo de escolha
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
+                  <div>
+                    <p className="font-bold uppercase mb-4 text-blue-400 flex items-center gap-2">
+                      <CheckCircle2 className="w-3 h-3" /> Critérios de seleção
+                    </p>
+                    <ul className="opacity-70 space-y-2">
+                      <li>Reputação e avaliações online</li>
+                      <li>Recomendações de conhecidos</li>
+                      <li>Conveniência de localização</li>
+                      <li>Atendimento via WhatsApp</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase mb-4 text-blue-400 flex items-center gap-2">
+                      <ShieldAlert className="w-3 h-3" /> Principais objeções
+                    </p>
+                    <ul className="opacity-70 space-y-2">
+                      <li>Preço percebido alto</li>
+                      <li>Falta de confiança</li>
+                      <li>Ausência de clareza</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção 3: Concorrência */}
+      <section className="px-6 py-24 md:px-20 lg:px-40 max-w-7xl mx-auto relative overflow-hidden">
+        <h2 className="text-6xl font-black tracking-tighter mb-16 relative z-10">
+          ANÁLISE DE <br/>CONCORRÊNCIA
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-16 relative z-10">
+          {[
+            { t: "1. Clínicas populares", c: "Preços competitivos; foco em volume. Menos foco em atendimento personalizado.", icon: <Users className="w-6 h-6"/> },
+            { t: "2. Clínicas tradicionais", c: "Estabelecidas há anos; boa base de pacientes locais. Forte reputação local.", icon: <Clock className="w-6 h-6"/> },
+            { t: "3. Clínicas premium", c: "Foco em estética e tecnologia avançada. Maior ticket médio, experiência aprimorada.", icon: <Sparkles className="w-6 h-6"/> },
+            { t: "4. Redes e franquias", c: "Potencial para expansão via convênios e estrutura corporativa padronizada.", icon: <Box className="w-6 h-6"/> }
+          ].map((item, i) => (
+            <div key={i} className="p-8 bg-gray-50 flex flex-col justify-between h-72 hover:bg-black hover:text-white transition-all duration-500 border border-gray-100 group">
+              <div className="text-blue-500 group-hover:text-blue-400 transition-colors">{item.icon}</div>
+              <div>
+                <h4 className="font-bold uppercase text-sm mb-4">{item.t}</h4>
+                <p className="text-sm opacity-80 leading-snug">{item.c}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="overflow-x-auto border-t-2 border-black relative z-10">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-black text-white text-[10px] uppercase tracking-[3px]">
+                <th className="p-6 font-bold">Segmento</th>
+                <th className="p-6 font-bold">Proposta de Valor</th>
+                <th className="p-6 font-bold">Faixa de Preço</th>
+                <th className="p-6 font-bold">Diferencial Real</th>
+                <th className="p-6 font-bold">Ponto Fraco Exploável</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm divide-y divide-gray-100">
+              {[
+                { s: "Populares", v: "Acessibilidade econômica", p: "Baixa", d: "Preço baixo", f: "Baixa experiência, fidelização fraca" },
+                { s: "Tradicionais", v: "Confiança local", p: "Média", d: "Relacionamento histórico", f: "Digitalização lenta" },
+                { s: "Premium", v: "Estética/qualidade", p: "Alta", d: "Tecnologia e experiência", f: "Alto custo" },
+                { s: "Redes/Franquias", v: "Processos padronizados", p: "Variável", d: "Marketing e estrutura", f: "Percepção impessoal" }
+              ].map((row, i) => (
+                <tr key={i} className="hover:bg-blue-50 transition-colors group">
+                  <td className="p-6 font-bold flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                    <div className="w-1.5 h-1.5 bg-black rounded-full"></div> {row.s}
+                  </td>
+                  <td className="p-6">{row.v}</td>
+                  <td className="p-6">{row.p}</td>
+                  <td className="p-6">{row.d}</td>
+                  <td className="p-6 text-red-600 font-medium italic">{row.f}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Seção 4 & 5: Grid de Impacto */}
+      <section className="bg-gray-100 py-24 px-6 md:px-20 lg:px-40 relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 relative z-10">
+          <div>
+            <h2 className="text-4xl font-black tracking-tighter mb-12 flex items-center gap-4">
+              <Search className="text-blue-600 w-8 h-8" /> ANÁLISE DE SERVIÇOS
+            </h2>
+            <div className="space-y-8">
+              <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-gray-100 group">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                  <Activity className="w-3 h-3" /> Alta demanda
+                </span>
+                <p className="text-lg font-medium">Profilaxia e restaurações básicas. Odontopediatria e urgências.</p>
+              </div>
+              <div className="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-green-500 hover:shadow-xl transition-shadow border-y border-r border-gray-100">
+                <span className="text-xs font-bold text-green-500 uppercase tracking-widest flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-3 h-3" /> Alta margem
+                </span>
+                <p className="text-lg font-medium">Estética e reabilitação (clareamento, facetas, alinhadores). Implantes com planejamento digital.</p>
+              </div>
+              <div className="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-blue-500 hover:shadow-xl transition-shadow border-y border-r border-gray-100">
+                <span className="text-xs font-bold text-blue-500 uppercase tracking-widest flex items-center gap-2 mb-4">
+                  <Clock className="w-3 h-3" /> Alta recorrência
+                </span>
+                <p className="text-lg font-medium">Programas de manutenção e check-ups.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-4xl font-black tracking-tighter mb-12 flex items-center gap-4">
+              <Zap className="text-yellow-500 w-8 h-8" /> OPORTUNIDADES
+            </h2>
+            <div className="space-y-6">
+              {[
+                { t: "Fáceis (baixo esforço)", c: "Presença digital forte: agendamento online, WhatsApp Business, avaliações. Conteúdo educacional.", icon: <Sparkles className="text-blue-600 w-5 h-5"/> },
+                { t: "Médio esforço", c: "Pacotes de serviços: check-ups + limpeza anual. Programa de fidelidade e planos de manutenção.", icon: <Rocket className="text-orange-600 w-5 h-5"/> },
+                { t: "Estruturais (alto impacto)", c: "Experiência do paciente: ambiente, acolhimento. Tecnologia: scanner intraoral, prontuário digital.", icon: <Lightbulb className="text-purple-600 w-5 h-5"/> }
+              ].map((item, idx) => (
+                <div key={idx} className="group border border-gray-200 p-6 hover:bg-white transition-all cursor-default flex items-start gap-4">
+                  <div className="mt-1">{item.icon}</div>
+                  <div>
+                    <h4 className="font-bold mb-2 uppercase text-sm">{item.t}</h4>
+                    <p className="text-sm text-gray-600 leading-relaxed">{item.c}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção 6 & 7: SWOT e Modelos */}
+      <section className="px-6 py-24 md:px-20 lg:px-40 max-w-7xl mx-auto border-b border-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          <div className="lg:col-span-4 space-y-12">
+            <div>
+              <h2 className="text-4xl font-black tracking-tighter mb-8 underline decoration-blue-500 flex items-center gap-4">
+                <Briefcase className="w-8 h-8 text-black" /> MODELOS DE NEGÓCIO
+              </h2>
+              <div className="space-y-3">
+                {["Assinaturas de manutenção bucal", "Pacotes por estação: “sorriso de verão”, etc.", "Cross-sell ético: combinar estética com saúde."].map((text, i) => (
+                   <p key={i} className="p-4 bg-gray-50 flex items-center gap-3 border border-gray-100 hover:border-blue-200 transition-colors">
+                      <ChevronRight className="w-4 h-4 text-blue-600" /> {text}
+                   </p>
+                ))}
+              </div>
+              <div className="mt-8 p-6 border-2 border-dashed border-red-200 bg-red-50 text-red-900 rounded-xl">
+                <div className="flex items-center gap-2 font-bold mb-2">
+                  <ShieldAlert className="w-5 h-5" /> Riscos/regulamentação
+                </div>
+                <p className="text-xs leading-relaxed">Planos próprias precisam observar regras do Conselho Federal de Odontologia e legislação de planos de saúde.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-8">
+            <h2 className="text-6xl font-black tracking-tighter mb-12 text-center flex items-center justify-center gap-6">
+               ANÁLISE <span className="text-gray-200 italic">SWOT</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-10 bg-[#e7f3ff] rounded-[3rem] border border-blue-100 relative group">
+                <TrendingUp className="absolute top-6 right-6 w-8 h-8 text-blue-300 opacity-40 group-hover:opacity-100 transition-opacity" />
+                <h4 className="text-2xl font-black mb-6 uppercase text-blue-900">Forças</h4>
+                <ul className="text-sm space-y-3 font-medium text-blue-800">
+                  <li>Mercado crescente e culturalmente voltado à odontologia.</li>
+                  <li>Demanda contínua por serviços básicos e estéticos.</li>
+                </ul>
+              </div>
+              <div className="p-10 bg-[#fef2f2] rounded-[3rem] border border-red-100 relative group">
+                <TrendingDown className="absolute top-6 right-6 w-8 h-8 text-red-300 opacity-40 group-hover:opacity-100 transition-opacity" />
+                <h4 className="text-2xl font-black mb-6 uppercase text-red-900">Fraquezas</h4>
+                <ul className="text-sm space-y-3 font-medium text-red-800">
+                  <li>Gestão estratégica deficiente em muitas clínicas.</li>
+                  <li>Sazonalidade e sensibilidade a preço.</li>
+                </ul>
+              </div>
+              <div className="p-10 bg-[#f0fdf4] rounded-[3rem] border border-green-100 relative group">
+                <Sparkles className="absolute top-6 right-6 w-8 h-8 text-green-300 opacity-40 group-hover:opacity-100 transition-opacity" />
+                <h4 className="text-2xl font-black mb-6 uppercase text-green-900">Oportunidades</h4>
+                <ul className="text-sm space-y-3 font-medium text-green-800">
+                  <li>Teleodontologia e digitalização.</li>
+                  <li>Programas de fidelização inovadores.</li>
+                </ul>
+              </div>
+              <div className="p-10 bg-[#fffbeb] rounded-[3rem] border border-amber-100 relative group">
+                <ShieldAlert className="absolute top-6 right-6 w-8 h-8 text-amber-300 opacity-40 group-hover:opacity-100 transition-opacity" />
+                <h4 className="text-2xl font-black mb-6 uppercase text-amber-900">Ameaças</h4>
+                <ul className="text-sm space-y-3 font-medium text-amber-800">
+                  <li>Concorrência local agressiva em preço.</li>
+                  <li>Instabilidade econômica e custos de tecnologia.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção 8: Insights */}
+      <section className="bg-black text-white py-32 px-6 md:px-20 lg:px-40 relative">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <h2 className="text-5xl font-black tracking-tighter mb-20 flex items-center gap-6">
+            <ArrowUpRight className="w-12 h-12 text-blue-500" /> INSIGHTS ESTRATÉGICOS
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="space-y-12">
+              <h3 className="text-xs font-bold uppercase tracking-[10px] text-gray-500 border-b border-white/20 pb-4">NÃO ÓBVIOS</h3>
+              <div className="space-y-10">
+                {[
+                  "A experiência do paciente tem impacto direto em retenção mais do que preço.",
+                  "Preço transparente online impulsiona confiança.",
+                  "Publicidade orgânica via educação em saúde aumenta o valor percebido.",
+                  "Parcerias locais ampliam base de pacientes.",
+                  "Foco em nichos específicos cria defensabilidade competitiva."
+                ].map((insight, i) => (
+                  <div key={i} className="flex gap-6 items-start group">
+                    <span className="text-4xl font-black text-blue-500 opacity-20 group-hover:opacity-100 transition-opacity">0{i+1}</span>
+                    <p className="text-2xl font-light leading-snug">{insight}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white/5 p-12 rounded-2xl border border-white/10">
+              <h3 className="text-xs font-bold uppercase tracking-[10px] text-gray-500 mb-10 flex items-center gap-2">
+                 <TrendingDown className="w-4 h-4" /> Erros que travam crescimento
+              </h3>
+              <ul className="space-y-8 text-xl">
+                <li className="flex items-center gap-4 text-red-400 group">
+                  <div className="w-4 h-4 bg-red-400 rounded-full shrink-0 group-hover:scale-125 transition-transform"></div>
+                  Ignorar métricas de performance (CAC, LTV, taxa de retorno).
+                </li>
+                <li className="flex items-center gap-4 text-red-400 group">
+                  <div className="w-4 h-4 bg-red-400 rounded-full shrink-0 group-hover:scale-125 transition-transform"></div>
+                  Desviar foco ao competir apenas por preço.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção 9: Plano de Ação */}
+      <section className="py-32 px-6 md:px-20 lg:px-40 max-w-7xl mx-auto">
+        <h2 className="text-7xl font-black tracking-tighter mb-24 border-b-8 border-black pb-8 flex items-center gap-6">
+           PLANO DE AÇÃO
+        </h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-24">
+          {[
+            { month: "MÊS 01", icon: <Calendar className="w-6 h-6"/>, title: "Prioridades Imediatas", steps: ["Levantamento de preços e concorrência.", "Agendamento online + WhatsApp Business.", "Criar perfil e conteúdo nas redes."] },
+            { month: "MÊS 02", icon: <Rocket className="w-6 h-6"/>, title: "Expansão e Estrutura", steps: ["Definir pacotes e planos de manutenção.", "Campanhas de anúncios segmentados.", "Parcerias com empresas locais."] },
+            { month: "MÊS 03", icon: <CheckCircle2 className="w-6 h-6"/>, title: "Fidelização e Métricas", steps: ["Implantar programa de fidelidade.", "Coletar avaliações e depoimentos.", "Acompanhar métricas de retorno."] }
+          ].map((item, idx) => (
+            <div key={idx} className="relative p-10 bg-gray-50 border border-gray-200 group hover:border-black transition-colors">
+              <div className="absolute top-0 left-10 transform -translate-y-1/2 bg-black text-white px-6 py-2 font-bold italic flex items-center gap-2">
+                {item.icon} {item.month}
+              </div>
+              <h4 className="text-lg font-bold mb-6 mt-4 uppercase tracking-tighter">{item.title}</h4>
+              <ul className="space-y-4 text-sm leading-relaxed">
+                {item.steps.map((step, sidx) => (
+                   <li key={sidx} className="flex gap-2 font-medium border-b border-gray-200 pb-2 group-hover:border-black/20 transition-colors">
+                     <ChevronRight className="w-4 h-4 text-blue-600 shrink-0" /> {step}
+                   </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-blue-600 text-white p-16 rounded-[4rem] relative overflow-hidden">
+          <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
+            <BarChart3 className="w-96 h-96" />
+          </div>
+          <div className="flex items-center gap-6 mb-12 relative z-10">
+            <BarChart3 className="w-12 h-12" />
+            <h3 className="text-4xl font-black uppercase tracking-tighter italic underline decoration-white decoration-4 underline-offset-8">Métricas-Chave (KPIs)</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+            {[
+              { num: "01", label: "CAC (Custo de aquisição de cliente)." },
+              { num: "02", label: "ROI por campanha de marketing." },
+              { num: "03", label: "Taxa de fidelização anualizada." }
+            ].map((kpi, i) => (
+              <div key={i} className="border-l-2 border-white/30 pl-8 group">
+                <span className="text-7xl font-black opacity-30 block group-hover:opacity-100 transition-opacity">{kpi.num}</span>
+                <p className="text-2xl font-bold uppercase tracking-tighter leading-tight mt-2">{kpi.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-6 py-20 border-t border-black md:px-20 lg:px-40 bg-white relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+          <div className="space-y-4">
+            <h3 className="text-2xl font-black tracking-tighter uppercase italic flex items-center gap-3">
+               STRATEGIC ANALYSIS
+            </h3>
+            <p className="text-xs font-bold text-gray-400 tracking-[3px]">© 2026 MONTES CLAROS DENTAL ECOSYSTEM</p>
+          </div>
+          <div className="flex gap-6 items-center">
+            <div className="w-14 h-14 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all cursor-pointer">
+              <Stethoscope className="w-6 h-6" />
+            </div>
+            <div className="text-right">
+              <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400">Regional Office</span>
+              <span className="text-xl font-black tracking-tighter">MG / NORTH</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
