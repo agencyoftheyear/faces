@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionário 360° - Diagnóstico Profundo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease; }
+        .accordion-content.active { max-height: 5000px; padding-bottom: 2rem; }
+        .chevron { transition: transform 0.3s ease; }
+        .rotate-180 { transform: rotate(180deg); }
+        input[type="radio"]:checked + label, input[type="checkbox"]:checked + label { 
+            border-color: #2563eb; 
+            background-color: #eff6ff; 
+            color: #1e40af;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+        .input-field {
+            @apply w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition;
+        }
+        label.block-label { @apply text-xs font-bold text-slate-500 uppercase mb-1 block tracking-wider; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen pb-32">
+
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <!-- Header -->
+    <header class="text-center mb-10">
+        <div class="inline-flex items-center justify-center p-4 bg-blue-600 rounded-3xl shadow-xl mb-6 text-white transform hover:scale-105 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight mb-2">Diagnóstico Profundo 360°</h1>
+        <p class="text-slate-500 text-lg max-w-2xl mx-auto">Visão sistêmica da sua Clínica Odontológica para identificar gargalos e acelerar o crescimento.</p>
+        
+        <div class="mt-8 flex justify-center gap-6">
+            <button onclick="expandAll()" class="text-sm font-semibold text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full transition">Expandir Tudo</button>
+            <button onclick="collapseAll()" class="text-sm font-semibold text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-full transition">Recolher Tudo</button>
+        </div>
+    </header>
+
+    <form id="diagnosticoForm" class="space-y-4">
+        
+        <!-- 1. IDENTIDADE E MOMENTO -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(1)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-blue-100 text-blue-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-blue-500 uppercase tracking-widest">Seção 01</span>
+                        <span class="font-bold text-lg text-slate-700">Identidade e Momento</span>
+                    </div>
+                </div>
+                <svg id="chevron-1" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-1" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block-label">Nome da Clínica</label>
+                        <input type="text" name="1_nome_clinica" placeholder="Mantenha em branco se quiser anônimo" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block-label">Cidade/Bairro Exato</label>
+                        <input type="text" name="1_localizacao" placeholder="Ex: Centro, Bairro Nobre..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block-label">Tempo de Existência</label>
+                        <input type="text" name="1_tempo_clinica" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Situação Atual</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="radio" name="1_situacao" id="s1_1" value="Começando" class="hidden"><label for="s1_1" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 transition flex items-center">🌱 Está começando</label>
+                            <input type="radio" name="1_situacao" id="s1_2" value="Estável" class="hidden"><label for="s1_2" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 transition flex items-center">⚖️ Está estável</label>
+                            <input type="radio" name="1_situacao" id="s1_3" value="Em queda" class="hidden"><label for="s1_3" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 transition flex items-center">📉 Está em queda</label>
+                            <input type="radio" name="1_situacao" id="s1_4" value="Cresce Desorganizada" class="hidden"><label for="s1_4" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 transition flex items-center">🌪️ Cresce desorganizada</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Como descreveria o momento atual em uma frase?</label>
+                        <textarea name="1_descricao_frase" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Maior dor do negócio hoje?</label>
+                        <textarea name="1_maior_dor" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Onde a clínica estará em 2 anos se nada mudar?</label>
+                        <textarea name="1_visao_2_anos" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ESTRUTURA FÍSICA -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(2)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-emerald-500 uppercase tracking-widest">Seção 02</span>
+                        <span class="font-bold text-lg text-slate-700">Estrutura e Capacidade</span>
+                    </div>
+                </div>
+                <svg id="chevron-2" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-2" class="accordion-content px-6 space-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="col-span-1">
+                        <label class="block-label">Consultórios</label>
+                        <input type="number" name="2_consultorios" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="block-label">Cadeiras</label>
+                        <input type="number" name="2_cadeiras" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Capacidade Máx (Atend/Dia)</label>
+                        <input type="number" name="2_atend_dia_max" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Ocupação Atual (%)</label>
+                        <input type="text" name="2_ocupacao_percent" placeholder="Ex: 70%" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Turnos / Horários de Funcionamento</label>
+                        <input type="text" name="2_turnos_horarios" placeholder="Ex: Seg-Sex 08h-18h" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-4">
+                        <label class="block-label mb-2">Padrão da Estrutura Física</label>
+                        <div class="flex flex-wrap gap-2">
+                            <input type="radio" name="2_padrao" id="p2_1" value="Simples" class="hidden"><label for="p2_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Simples</label>
+                            <input type="radio" name="2_padrao" id="p2_2" value="Boa" class="hidden"><label for="p2_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Boa</label>
+                            <input type="radio" name="2_padrao" id="p2_3" value="Diferenciada" class="hidden"><label for="p2_3" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Diferenciada</label>
+                            <input type="radio" name="2_padrao" id="p2_4" value="Premium" class="hidden"><label for="p2_4" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Premium</label>
+                        </div>
+                    </div>
+                    <div class="col-span-4">
+                        <label class="block-label">Existe gargalo físico hoje? Qual?</label>
+                        <textarea name="2_gargalo_fisico" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. EQUIPE E PAPÉIS -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(3)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-orange-100 text-orange-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-orange-500 uppercase tracking-widest">Seção 03</span>
+                        <span class="font-bold text-lg text-slate-700">Equipe e Papéis</span>
+                    </div>
+                </div>
+                <svg id="chevron-3" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-3" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block-label">Quantos dentistas e quais as especialidades de cada um?</label>
+                        <textarea name="3_dentistas_detalhes" rows="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Os dentistas são:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <input type="radio" name="3_vínculo" id="v3_1" value="Sócios" class="hidden"><label for="v3_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Sócios</label>
+                            <input type="radio" name="3_vínculo" id="v3_2" value="Prestadores" class="hidden"><label for="v3_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Prestadores</label>
+                            <input type="radio" name="3_vínculo" id="v3_3" value="Funcionários" class="hidden"><label for="v3_3" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Funcionários</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Qtd Auxiliares / ASB / TSB</label>
+                        <input type="text" name="3_qtd_aux" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Qtd Recepção / Atendimento</label>
+                        <input type="text" name="3_qtd_recepcao" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Existe gerente/administrador?</label>
+                        <input type="text" name="3_gerente" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Quem manda de verdade na operação?</label>
+                        <input type="text" name="3_lider_real" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Clareza de Funções:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="radio" name="3_clareza" id="c3_1" value="Sim" class="hidden"><label for="c3_1" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">🎯 Funções Claras</label>
+                            <input type="radio" name="3_clareza" id="c3_2" value="Fazem de tudo" class="hidden"><label for="c3_2" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">🔀 Cada um faz um pouco</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Qual o maior problema com a equipe hoje?</label>
+                        <textarea name="3_problema_equipe" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. MAPA DE SERVIÇOS -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(4)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><rect x="2" y="2" width="20" height="20" rx="2"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-indigo-500 uppercase tracking-widest">Seção 04</span>
+                        <span class="font-bold text-lg text-slate-700">Mapa Real de Serviços</span>
+                    </div>
+                </div>
+                <svg id="chevron-4" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-4" class="accordion-content px-6">
+                <p class="text-sm text-slate-500 mb-4 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    Use os ícones para classificar: ⬆️ Alta Demanda | 💰 Alta Margem | 🔁 Alta Recorrência | 😓 Pouco Retorno
+                </p>
+                <textarea name="4_mapa_servicos" rows="8" placeholder="Exemplo: Profilaxia – ⬆️ 🔁 | Implantes – 💰 😓 Dá trabalho" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none font-mono text-sm leading-relaxed"></textarea>
+            </div>
+        </div>
+
+        <!-- 5. PERFIL DOS PACIENTES -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(5)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-cyan-100 text-cyan-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-cyan-500 uppercase tracking-widest">Seção 05</span>
+                        <span class="font-bold text-lg text-slate-700">Perfil dos Pacientes</span>
+                    </div>
+                </div>
+                <svg id="chevron-5" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-5" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Perfil Predominante Hoje</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="radio" name="5_perfil_classe" id="p5_1" value="Popular" class="hidden"><label for="p5_1" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 text-center transition block">💸 Popular</label>
+                            <input type="radio" name="5_perfil_classe" id="p5_2" value="Classe Média" class="hidden"><label for="p5_2" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 text-center transition block">🏠 Classe Média</label>
+                            <input type="radio" name="5_perfil_classe" id="p5_3" value="Classe Média Alta" class="hidden"><label for="p5_3" class="border border-slate-200 rounded-xl p-3 text-sm cursor-pointer hover:bg-slate-50 text-center transition block">💎 Classe Média Alta</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Faixa Etária Predominante</label>
+                        <input type="text" name="5_idade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label mb-2">A maioria vem por:</label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="radio" name="5_motivo" id="m5_1" value="Dor/Urgência" class="hidden"><label for="m5_1" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 block">🚨 Dor / Urgência</label>
+                            <input type="radio" name="5_motivo" id="m5_2" value="Estética" class="hidden"><label for="m5_2" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 block">✨ Estética</label>
+                            <input type="radio" name="5_motivo" id="m5_3" value="Manutenção" class="hidden"><label for="m5_3" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 block">📅 Manutenção</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Sensibilidade a Preço</label>
+                        <div class="flex gap-2">
+                            <input type="radio" name="5_sensib_preco" id="pre5_1" value="Alta" class="hidden"><label for="pre5_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Alta</label>
+                            <input type="radio" name="5_sensib_preco" id="pre5_2" value="Média" class="hidden"><label for="pre5_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Média</label>
+                            <input type="radio" name="5_sensib_preco" id="pre5_3" value="Baixa" class="hidden"><label for="pre5_3" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Baixa</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Comportamento Comum:</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="checkbox" name="5_comport" id="comp5_1" value="Orça Muito" class="hidden"><label for="comp5_1" class="border border-slate-200 rounded-xl p-2 text-xs cursor-pointer hover:bg-slate-50 block text-center transition">📊 Orçam Muito</label>
+                            <input type="checkbox" name="5_comport" id="comp5_2" value="Compara Clínicas" class="hidden"><label for="comp5_2" class="border border-slate-200 rounded-xl p-2 text-xs cursor-pointer hover:bg-slate-50 block text-center transition">🔍 Comparam Clínicas</label>
+                            <input type="checkbox" name="5_comport" id="comp5_3" value="Desiste no Meio" class="hidden"><label for="comp5_3" class="border border-slate-200 rounded-xl p-2 text-xs cursor-pointer hover:bg-slate-50 block text-center transition">🏃 Desistem no Meio</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Tratamento que mais perde venda?</label>
+                        <input type="text" name="5_trat_perde_venda" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Por que não fecham?</label>
+                        <input type="text" name="5_por_que_nao_fecha" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. AQUISIÇÃO (MARKETING) -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(6)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-pink-100 text-pink-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-pink-500 uppercase tracking-widest">Seção 06</span>
+                        <span class="font-bold text-lg text-slate-700">Aquisição e Marketing</span>
+                    </div>
+                </div>
+                <svg id="chevron-6" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-6" class="accordion-content px-6 space-y-4">
+                <label class="block-label">Origem dos Pacientes (% aprox.)</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">📢 Indicação</label><input type="text" name="6_orig_indic" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">📸 Instagram</label><input type="text" name="6_orig_insta" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">🔍 Google</label><input type="text" name="6_orig_google" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">🏥 Convênios</label><input type="text" name="6_orig_convenio" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">💰 Tráfego Pago</label><input type="text" name="6_orig_ads" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200"><label class="text-[10px] font-bold text-slate-400 uppercase">🚶 Passantes</label><input type="text" name="6_orig_passante" class="w-full bg-transparent border-none outline-none text-sm p-1"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Existe estratégia ou é "no automático"?</label>
+                        <select name="6_estrategia" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                            <option value="automático">"No Automático" (Esperando indicações)</option>
+                            <option value="estratégico">Estratégico (Planejado e Executado)</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2 bg-pink-50/50 p-4 rounded-2xl border border-pink-100">
+                        <h4 class="text-xs font-bold text-pink-600 uppercase mb-3">📸 Instagram & Google</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Posta com frequência?</label><input type="text" name="6_insta_freq" class="w-full p-2 bg-white border border-slate-200 rounded-lg outline-none text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Conteúdo (Estratégico/Aleatório)?</label><input type="text" name="6_insta_conteudo" class="w-full p-2 bg-white border border-slate-200 rounded-lg outline-none text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Google Meu Negócio (Quantas avaliações?)</label><input type="text" name="6_google_reviews" class="w-full p-2 bg-white border border-slate-200 rounded-lg outline-none text-sm"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Sabe o CAC (Custo de Aquisição)?</label><input type="text" name="6_sabe_cac" class="w-full p-2 bg-white border border-slate-200 rounded-lg outline-none text-sm"></div>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Já fez anúncios pagos? Qual foi o resultado?</label>
+                        <textarea name="6_anuncios_resultado" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. VENDAS E CONVERSÃO -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(7)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-yellow-100 text-yellow-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-yellow-500 uppercase tracking-widest">Seção 07</span>
+                        <span class="font-bold text-lg text-slate-700">Vendas e Conversão</span>
+                    </div>
+                </div>
+                <svg id="chevron-7" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-7" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block-label">Quem apresenta orçamento?</label>
+                        <input type="text" name="7_quem_apresenta" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Existe script ou cada um fala do seu jeito?</label>
+                        <input type="text" name="7_script_venda" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Taxa de Fechamento Estimada:</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="radio" name="7_taxa_fechamento" id="tf7_1" value="<30%" class="hidden"><label for="tf7_1" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Menos de 30%</label>
+                            <input type="radio" name="7_taxa_fechamento" id="tf7_2" value="30-50%" class="hidden"><label for="tf7_2" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">30% a 50%</label>
+                            <input type="radio" name="7_taxa_fechamento" id="tf7_3" value=">50%" class="hidden"><label for="tf7_3" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Mais de 50%</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Onde mais perde venda?</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <input type="checkbox" name="7_perda_venda" id="pv7_1" value="Preço" class="hidden"><label for="pv7_1" class="border border-slate-200 rounded-xl p-2 text-center text-xs cursor-pointer hover:bg-slate-50 transition block">🏷️ Preço</label>
+                            <input type="checkbox" name="7_perda_venda" id="pv7_2" value="Confiança" class="hidden"><label for="pv7_2" class="border border-slate-200 rounded-xl p-2 text-center text-xs cursor-pointer hover:bg-slate-50 transition block">🤝 Confiança</label>
+                            <input type="checkbox" name="7_perda_venda" id="pv7_3" value="Prazo" class="hidden"><label for="pv7_3" class="border border-slate-200 rounded-xl p-2 text-center text-xs cursor-pointer hover:bg-slate-50 transition block">⏳ Prazo</label>
+                            <input type="checkbox" name="7_perda_venda" id="pv7_4" value="Comunicação" class="hidden"><label for="pv7_4" class="border border-slate-200 rounded-xl p-2 text-center text-xs cursor-pointer hover:bg-slate-50 transition block">🗣️ Comunicação</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Existe follow-up de orçamentos?</label>
+                        <input type="text" name="7_follow_up" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Parcelamento Máximo / Formas</label>
+                        <input type="text" name="7_parcelamento" placeholder="Ex: 12x no cartão / Boleto" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. CONVÊNIOS E PREÇOS -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(8)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-red-100 text-red-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-red-500 uppercase tracking-widest">Seção 08</span>
+                        <span class="font-bold text-lg text-slate-700">Convênios e Preços</span>
+                    </div>
+                </div>
+                <svg id="chevron-8" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-8" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="block-label">Atende convênios? Quais?</label>
+                        <input type="text" name="8_quais_convenios" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">% da receita vinda de convênios</label>
+                        <input type="text" name="8_receita_convenio_pct" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label mb-2">Convênios dão:</label>
+                        <div class="flex gap-2">
+                            <input type="radio" name="8_convenio_lucro" id="cl8_1" value="Lucro" class="hidden"><label for="cl8_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Lucro</label>
+                            <input type="radio" name="8_convenio_lucro" id="cl8_2" value="Empate" class="hidden"><label for="cl8_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Empate</label>
+                            <input type="radio" name="8_convenio_lucro" id="cl8_3" value="Prejuízo" class="hidden"><label for="cl8_3" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 block transition">Prejuízo</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Preços são:</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="radio" name="8_precos_def" id="pd8_1" value="Copiados" class="hidden"><label for="pd8_1" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Copiados</label>
+                            <input type="radio" name="8_precos_def" id="pd8_2" value="Intuitivos" class="hidden"><label for="pd8_2" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Intuitivos</label>
+                            <input type="radio" name="8_precos_def" id="pd8_3" value="Calculados" class="hidden"><label for="pd8_3" class="border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Calculados</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Você sabe sua margem média por procedimento?</label>
+                        <input type="text" name="8_sabe_margem" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Existe tabela clara?</label>
+                        <input type="text" name="8_tabela_clara" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. FINANCEIRO -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(9)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-green-100 text-green-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-green-500 uppercase tracking-widest">Seção 09</span>
+                        <span class="font-bold text-lg text-slate-700">Financeiro Real</span>
+                    </div>
+                </div>
+                <svg id="chevron-9" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-9" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block-label">Faturamento Médio Mensal</label>
+                        <input type="text" name="9_faturamento" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Custos Fixos Mensais (Aprox.)</label>
+                        <input type="text" name="9_custos_fixos" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Custos Variáveis (%)</label>
+                        <input type="text" name="9_custos_var_pct" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label mb-2">Lucro Líquido Aproximado:</label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="radio" name="9_lucro_liq" id="ll9_1" value="Não sei" class="hidden"><label for="ll9_1" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 transition block text-center">Não Sei</label>
+                            <input type="radio" name="9_lucro_liq" id="ll9_2" value="Sei, mas não gosto" class="hidden"><label for="ll9_2" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 transition block text-center">Sei, mas não gosto</label>
+                            <input type="radio" name="9_lucro_liq" id="ll9_3" value="Sei e acompanho" class="hidden"><label for="ll9_3" class="border border-slate-200 rounded-xl p-2 text-sm cursor-pointer hover:bg-slate-50 transition block text-center">Sei e acompanho</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Pró-labore dos sócios</label>
+                        <input type="text" name="9_pro_labore" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label mb-2">Fluxo de Caixa:</label>
+                        <div class="flex gap-2">
+                            <input type="radio" name="9_fluxo_caixa" id="fc9_1" value="Organizado" class="hidden"><label for="fc9_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">✅ Organizado</label>
+                            <input type="radio" name="9_fluxo_caixa" id="fc9_2" value="Caótico" class="hidden"><label for="fc9_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">🔥 Caótico</label>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Já teve meses negativos?</label>
+                        <input type="text" name="9_meses_negativos" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. PROCESSOS E SISTEMAS -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(10)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-violet-100 text-violet-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-violet-500 uppercase tracking-widest">Seção 10</span>
+                        <span class="font-bold text-lg text-slate-700">Processos e Sistemas</span>
+                    </div>
+                </div>
+                <svg id="chevron-10" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-10" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block-label">Usa sistema de gestão? Qual?</label>
+                        <input type="text" name="10_sistema_gestao" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label mb-2">Agenda é:</label>
+                        <div class="flex gap-2">
+                            <input type="radio" name="10_agenda_tipo" id="at10_1" value="Manual" class="hidden"><label for="at10_1" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Manual</label>
+                            <input type="radio" name="10_agenda_tipo" id="at10_2" value="Digital" class="hidden"><label for="at10_2" class="flex-1 border border-slate-200 rounded-xl p-3 text-center text-sm cursor-pointer hover:bg-slate-50 transition block">Digital</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Taxa de faltas (estimativa)</label>
+                        <input type="text" name="10_no_show" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="flex items-center gap-4 pt-4">
+                        <label class="flex items-center text-sm font-medium cursor-pointer"><input type="checkbox" name="10_confirmacao_ativa" class="mr-2 w-4 h-4 rounded"> Confirmação Ativa?</label>
+                        <label class="flex items-center text-sm font-medium cursor-pointer"><input type="checkbox" name="10_pos_atendimento" class="mr-2 w-4 h-4 rounded"> Pós-atendimento?</label>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label">Quais KPIs são acompanhados hoje?</label>
+                        <input type="text" name="10_kpis" placeholder="Ex: Ticket Médio, Novos Pacientes..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. POSICIONAMENTO E MARCA -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(11)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-amber-100 text-amber-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-amber-500 uppercase tracking-widest">Seção 11</span>
+                        <span class="font-bold text-lg text-slate-700">Posicionamento e Marca</span>
+                    </div>
+                </div>
+                <svg id="chevron-11" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-11" class="accordion-content px-6 space-y-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block-label">Como a clínica se posiciona hoje?</label>
+                        <input type="text" name="11_posicionamento_atual" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block-label">O que o paciente percebe?</label>
+                            <textarea name="11_percepcao_real" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block-label">O que você gostaria de ser percebido?</label>
+                            <textarea name="11_percepcao_ideal" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Você se diferencia de verdade ou é "mais uma"?</label>
+                        <input type="text" name="11_diferencial" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Se fechasse amanhã, alguém sentiria falta? Por quê?</label>
+                        <textarea name="11_impacto_fechamento" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12. OBJETIVOS E AMBIÇÃO -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(12)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-indigo-500 uppercase tracking-widest">Seção 12</span>
+                        <span class="font-bold text-lg text-slate-700">Objetivos e Ambição</span>
+                    </div>
+                </div>
+                <svg id="chevron-12" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-12" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block-label">Meta em 1 Ano</label>
+                        <input type="text" name="12_meta_1_ano" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Meta em 3 Anos</label>
+                        <input type="text" name="12_meta_3_anos" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block-label mb-2">Você busca:</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            <input type="checkbox" name="12_desejos" id="d12_1" value="Lucro" class="hidden"><label for="d12_1" class="border border-slate-200 rounded-xl p-2 text-center text-[10px] cursor-pointer hover:bg-slate-50 transition block">💰 Mais Lucro</label>
+                            <input type="checkbox" name="12_desejos" id="d12_2" value="Tempo" class="hidden"><label for="d12_2" class="border border-slate-200 rounded-xl p-2 text-center text-[10px] cursor-pointer hover:bg-slate-50 transition block">🧘 Menos Trab.</label>
+                            <input type="checkbox" name="12_desejos" id="d12_3" value="Escala" class="hidden"><label for="d12_3" class="border border-slate-200 rounded-xl p-2 text-center text-[10px] cursor-pointer hover:bg-slate-50 transition block">🚀 Escala</label>
+                            <input type="checkbox" name="12_desejos" id="d12_4" value="Autoridade" class="hidden"><label for="d12_4" class="border border-slate-200 rounded-xl p-2 text-center text-[10px] cursor-pointer hover:bg-slate-50 transition block">👑 Autoridade</label>
+                            <input type="checkbox" name="12_desejos" id="d12_5" value="Venda" class="hidden"><label for="d12_5" class="border border-slate-200 rounded-xl p-2 text-center text-[10px] cursor-pointer hover:bg-slate-50 transition block">🏁 Venda Futura</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block-label">Quanto está disposto a mudar?</label>
+                        <input type="text" name="12_disposto_mudar" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Qual seu maior medo hoje?</label>
+                        <input type="text" name="12_maior_medo" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13. LIMITES E REALIDADE -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <button type="button" onclick="toggleAccordion(13)" class="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 transition">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-slate-900 text-white rounded-2xl shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div>
+                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest">Seção 13</span>
+                        <span class="font-bold text-lg text-slate-700">Limites e Realidade</span>
+                    </div>
+                </div>
+                <svg id="chevron-13" class="chevron w-6 h-6 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="content-13" class="accordion-content px-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block-label">Orçamento mensal para crescimento</label>
+                        <input type="text" name="13_budget_crescimento" placeholder="Ex: R$ 2.000,00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Limitações pessoais (Tempo/Energia)</label>
+                        <input type="text" name="13_limit_pessoal" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">O que não pode mudar de jeito nenhum?</label>
+                        <input type="text" name="13_nao_negociavel" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                    <div>
+                        <label class="block-label">Já tentou algo que deu errado? O quê?</label>
+                        <input type="text" name="13_tentativa_erro" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                    </div>
+                </div>
+                <div class="mt-8 bg-blue-600 p-6 rounded-3xl text-white">
+                    <h4 class="font-bold text-xl mb-2 flex items-center gap-2">
+                        🚀 Diagnóstico Concluído!
+                    </h4>
+                    <p class="text-blue-100 text-sm mb-4">Clique no botão abaixo para gerar o seu plano estratégico baseado em todas as respostas acima.</p>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <!-- Footer Flutuante -->
+    <div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent flex justify-center z-50">
+        <button type="button" onclick="exportToMarkdown()" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 px-12 rounded-3xl shadow-2xl transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar Todas as Respostas (.md)
+        </button>
+    </div>
+</div>
+
+<script>
+    function toggleAccordion(id) {
+        const content = document.getElementById(`content-${id}`);
+        const chevron = document.getElementById(`chevron-${id}`);
+        const isActive = content.classList.contains('active');
+        
+        if (!isActive) {
+            content.classList.add('active');
+            chevron.classList.add('rotate-180');
+            // Scroll suave para a seção aberta
+            setTimeout(() => {
+                content.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        } else {
+            content.classList.remove('active');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+
+    function expandAll() {
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.add('active'));
+        document.querySelectorAll('.chevron').forEach(v => v.classList.add('rotate-180'));
+    }
+
+    function collapseAll() {
+        document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.chevron').forEach(v => v.classList.remove('rotate-180'));
+    }
+
+    function exportToMarkdown() {
+        const form = document.getElementById('diagnosticoForm');
+        const formData = new FormData(form);
+        const clinicName = formData.get('1_nome_clinica') || 'Clinica_Sem_Nome';
+        
+        let md = `# 🦷 DIAGNÓSTICO PROFUNDO ODONTOLÓGICO 360°\n\n`;
+        md += `**Data da Análise:** ${new Date().toLocaleString('pt-BR')}\n`;
+        md += `**Clínica:** ${clinicName}\n\n`;
+        md += `---\n\n`;
+
+        // Agrupamento por Seção
+        const sectionMapping = {
+            "1": "IDENTIDADE E MOMENTO",
+            "2": "ESTRUTURA E CAPACIDADE",
+            "3": "EQUIPE E PAPÉIS",
+            "4": "MAPA DE SERVIÇOS",
+            "5": "PERFIL DOS PACIENTES",
+            "6": "AQUISIÇÃO E MARKETING",
+            "7": "VENDAS E CONVERSÃO",
+            "8": "CONVÊNIOS E PREÇOS",
+            "9": "FINANCEIRO",
+            "10": "PROCESSOS E SISTEMAS",
+            "11": "POSICIONAMENTO E MARCA",
+            "12": "OBJETIVOS E AMBIÇÃO",
+            "13": "LIMITES E REALIDADE"
+        };
+
+        // Organizar dados por prefixo da seção
+        const organizedData = {};
+        formData.forEach((value, key) => {
+            const secPrefix = key.split('_')[0];
+            if (!organizedData[secPrefix]) organizedData[secPrefix] = [];
+            
+            // Tratamento de nomes legíveis
+            let label = key.split('_').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            // Agrupar checkboxes com o mesmo nome
+            if (key === "5_comport" || key === "7_perda_venda" || key === "12_desejos") {
+                const existing = organizedData[secPrefix].find(i => i.label === label);
+                if (existing) {
+                    existing.value += `, ${value}`;
+                } else {
+                    organizedData[secPrefix].push({ label, value });
+                }
+            } else {
+                organizedData[secPrefix].push({ label, value });
+            }
+        });
+
+        // Montar MD
+        Object.keys(sectionMapping).forEach(sec => {
+            md += `## ${sec}. ${sectionMapping[sec]}\n`;
+            const items = organizedData[sec] || [];
+            if (items.length === 0) {
+                md += `_Nenhuma resposta nesta seção._\n\n`;
+            } else {
+                items.forEach(item => {
+                    md += `**${item.label}:** ${item.value || "_Não informado_"}\n\n`;
+                });
+            }
+            md += `\n`;
+        });
+
+        md += `---\n_Gerado por Diagnóstico 360° - Estratégia Odontológica_\n`;
+
+        // Download
+        const blob = new Blob([md], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const cleanName = clinicName.replace(/\s+/g, '_').toLowerCase();
+        a.download = `diagnostico-360-${cleanName}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Abre o primeiro por padrão
+    window.onload = () => toggleAccordion(1);
+</script>
+
+</body>
+</html>
